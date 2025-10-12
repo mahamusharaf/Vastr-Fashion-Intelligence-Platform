@@ -4,9 +4,6 @@ import json
 from datetime import datetime
 import os
 
-# ============================================
-# CONFIGURATION
-# ============================================
 MONGO_URI = "mongodb://localhost:27017/"
 DATABASE_NAME = "vastr_fashion_db"
 OUTPUT_DIR = "../reports"
