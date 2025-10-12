@@ -1,0 +1,168 @@
+{
+  "generated_at": "2025-10-12T18:33:50.478678",
+  "total_products": 6098,
+  "total_brands": 7,
+  "price_statistics": {
+    "average": 7275.13017874713,
+    "median": 4999.0,
+    "min": 690.0,
+    "max": 81990.0
+  },
+  "category_statistics": {
+    "Nishat Linen": {
+      "Unstitched": 535,
+      "Ready-to-Wear": 525
+    },
+    "Ethnic": {
+      "Ready-to-Wear": 201,
+      "Unstitched": 33,
+      "Western": 30,
+      "Trousers": 1
+    },
+    "Gul Ahmed": {
+      "Unstitched": 1603,
+      "Others": 210,
+      "Trousers": 103,
+      "Menswear": 68,
+      "Western": 68,
+      "Ready-to-Wear": 30
+    },
+    "Generation": {
+      "Others": 201,
+      "Western": 38,
+      "Kurta": 32,
+      "Unstitched": 16,
+      "Ready-to-Wear": 7,
+      "Trousers": 2,
+      "Menswear": 1
+    },
+    "Cross Stitch": {
+      "Trousers": 393,
+      "Ready-to-Wear": 381,
+      "Unstitched": 130,
+      "Menswear": 11
+    },
+    "Maria B": {
+      "Ready-to-Wear": 337,
+      "Unstitched": 35
+    },
+    "Limelight": {
+      "Unstitched": 470,
+      "Ready-to-Wear": 310,
+      "Western": 154,
+      "Trousers": 140,
+      "Kurta": 33
+    }
+  },
+  "brand_prices": {
+    "mean": {
+      "Maria B": 25758.68817204301,
+      "Ethnic": 10865.471698113208,
+      "Nishat Linen": 8000.264150943396,
+      "Cross Stitch": 7976.754098360656,
+      "Generation": 6178.565656565656,
+      "Gul Ahmed": 4987.5062439961575,
+      "Limelight": 3526.7658807588077
+    },
+    "median": {
+      "Maria B": 22191.0,
+      "Ethnic": 9990.0,
+      "Nishat Linen": 6990.0,
+      "Cross Stitch": 4950.0,
+      "Generation": 5698.0,
+      "Gul Ahmed": 4365.0,
+      "Limelight": 2959.2
+    },
+    "min": {
+      "Maria B": 990.0,
+      "Ethnic": 1690.0,
+      "Nishat Linen": 720.0,
+      "Cross Stitch": 900.0,
+      "Generation": 1449.0,
+      "Gul Ahmed": 690.0,
+      "Limelight": 799.5
+    },
+    "max": {
+      "Maria B": 81990.0,
+      "Ethnic": 24990.0,
+      "Nishat Linen": 39500.0,
+      "Cross Stitch": 65000.0,
+      "Generation": 29998.0,
+      "Gul Ahmed": 20994.0,
+      "Limelight": 21749.25
+    },
+    "count": {
+      "Maria B": 372,
+      "Ethnic": 265,
+      "Nishat Linen": 1060,
+      "Cross Stitch": 915,
+      "Generation": 297,
+      "Gul Ahmed": 2082,
+      "Limelight": 1107
+    }
+  },
+  "brand_stats": [
+    {
+      "brand": "Gul Ahmed",
+      "total_products": 2082,
+      "avg_price": 4987.5062439961575,
+      "available_products": 2082,
+      "products_with_images": 2082,
+      "avg_images_per_product": 5.498559077809798
+    },
+    {
+      "brand": "Limelight",
+      "total_products": 1107,
+      "avg_price": 3526.7658807588077,
+      "available_products": 1107,
+      "products_with_images": 1107,
+      "avg_images_per_product": 6.432700993676604
+    },
+    {
+      "brand": "Nishat Linen",
+      "total_products": 1060,
+      "avg_price": 8000.264150943396,
+      "available_products": 1057,
+      "products_with_images": 1060,
+      "avg_images_per_product": 6.031132075471698
+    },
+    {
+      "brand": "Cross Stitch",
+      "total_products": 915,
+      "avg_price": 7976.754098360656,
+      "available_products": 915,
+      "products_with_images": 915,
+      "avg_images_per_product": 5.371584699453552
+    },
+    {
+      "brand": "Maria B",
+      "total_products": 372,
+      "avg_price": 25758.68817204301,
+      "available_products": 368,
+      "products_with_images": 372,
+      "avg_images_per_product": 8.182795698924732
+    },
+    {
+      "brand": "Generation",
+      "total_products": 297,
+      "avg_price": 6178.565656565656,
+      "available_products": 297,
+      "products_with_images": 297,
+      "avg_images_per_product": 12.195286195286196
+    },
+    {
+      "brand": "Ethnic",
+      "total_products": 265,
+      "avg_price": 10865.471698113208,
+      "available_products": 264,
+      "products_with_images": 265,
+      "avg_images_per_product": 6.052830188679246
+    }
+  ],
+  "insights": [
+    "\ud83d\udd39 Maria B is the most premium brand (Avg: PKR 25,758.69)",
+    "\ud83d\udd39 Limelight offers most affordable options (Avg: PKR 3,526.77)",
+    "\ud83d\udd39 Gul Ahmed has the largest collection (2082 products)",
+    "\ud83d\udd39 31.4% of products are in mid-range (5K-10K PKR)"
+  ]
+}
