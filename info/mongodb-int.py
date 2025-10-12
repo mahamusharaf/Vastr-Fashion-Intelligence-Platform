@@ -235,14 +235,6 @@ def import_brand_data(brand_id, json_file, db):
 # MAIN EXECUTION
 # ============================================
 if __name__ == "__main__":
-    print("""
-    ╔═══════════════════════════════════════════════════════╗
-    ║                                                       ║
-    ║                 VASTR PROJECT                         ║
-    ║        Auto-Import All Brands to MongoDB              ║
-    ║                                                       ║
-    ╚═══════════════════════════════════════════════════════╝
-    """)
 
     if not os.path.exists(DATA_DIR):
         print(f"❌ Error: Data directory not found: {DATA_DIR}")
