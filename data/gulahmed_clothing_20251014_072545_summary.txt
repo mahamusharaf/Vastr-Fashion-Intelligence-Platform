@@ -1,0 +1,22 @@
+============================================================
+GUL AHMED CLOTHING COLLECTION - SCRAPING SUMMARY
+============================================================
+
+Scrape Date: 2025-10-14 07:25:46
+
+OVERVIEW:
+Total Clothing Items: 2343
+Available: 2343
+Out of Stock: 0
+Total Variants: 8255
+Total Images: 12997
+
+PRICE RANGE:
+Minimum: PKR 612.00
+Maximum: PKR 28990.00
+Average: PKR 5203.75
+
+PRODUCT TYPES:
+  Women: 1167
+  Women Fabric: 703
+  Salt: 473

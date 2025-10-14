@@ -1,0 +1,86 @@
+============================================================
+GENERATION CLOTHING COLLECTION - SCRAPING SUMMARY
+============================================================
+
+Scrape Date: 2025-10-14 07:26:30
+
+OVERVIEW:
+Total Clothing Items: 313
+Available: 313
+Out of Stock: 0
+Total Variants: 3569
+Total Images: 3832
+
+PRICE RANGE:
+Minimum: PKR 1449.00
+Maximum: PKR 29998.00
+Average: PKR 6194.89
+
+PRODUCT TYPES:
+  Color Waves: 13
+  Natasha Noorani: 12
+  Chaap: 9
+  Safaida: 9
+  Sona Chandi: 9
+  Bandhani Affair: 8
+  Floral Splendor: 8
+  Fresco Frenzy: 8
+  Woven Stories: 8
+  Jaal: 8
+  Polish Garden: 8
+  Zeenat: 8
+  Shyrdak: 8
+  Gul Bahar: 8
+  Floralscape: 8
+  Paisley Pop: 8
+  Zaviya: 7
+  Echo Tints: 7
+  Winter Bloom: 7
+  Bead Work: 7
+  Rang-E-Ajrak: 7
+  Shyrdak Patterns: 7
+  Soul of Sindh: 7
+  Ajrak: 7
+  Peepal: 7
+  Aarified: 7
+  Lores of Hungaria: 7
+  Linocut: 6
+  Bloom Craft: 6
+  Knit: 6
+  Ajrak Noir: 5
+  The Batik Edit: 5
+  Shawls: 5
+  Loungewear: 5
+  Cheent Paisley: 4
+  Ikat: 4
+  Ikkat: 3
+  Marorri Velvet: 3
+  Road To Budapest: 3
+  Jigsaw: 3
+  Retro Funk: 3
+  Mahrani: 2
+  Pigment Pop: 2
+  Beetlewing: 2
+  Lumban: 2
+  Golden Rose: 2
+  Horn Ok: 2
+  African Collage: 2
+  Chaand Baali: 2
+  Floral Ikat: 2
+  Golden Arches: 1
+  TatreezTales: 1
+  Dusty Dreams: 1
+  Trousers: 1
+  N K R: 1
+  Sibi Pop: 1
+  Virsa: 1
+  Saadah: 1
+  Night Folks: 1
+  Batik Bliss: 1
+  Sunflowers: 1
+  Moon Flower: 1
+  BlockTales: 1
+  Nawabi Gota: 1
+  Timeless Splender: 1
+  Timeless Textiles: 1
+  Jamil: 1
