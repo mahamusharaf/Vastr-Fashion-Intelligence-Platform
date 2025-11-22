@@ -1,0 +1,31 @@
+============================================================
+CROSS STITCH CLOTHING COLLECTION - SCRAPING SUMMARY
+============================================================
+
+Scrape Date: 2025-10-11 21:14:13
+
+OVERVIEW:
+Total Clothing Items: 915
+Available: 915
+Out of Stock: 0
+Total Variants: 3262
+Total Images: 4915
+
+PRICE RANGE:
+Minimum: PKR 900.00
+Maximum: PKR 65000.00
+Average: PKR 7976.75
+
+PRODUCT TYPES:
+  EXCLUSIVE PRET: 175
+  SILK PANTS: 147
+  EXCLUSIVE PANTS: 129
+  BASIC PANTS: 117
+  BASIC PRET: 97
+  LUXURY PRET: 82
+  BASIC SUITS: 81
+  EXCLUSIVE SUITS: 26
+  WEDDING PRET: 25
+  LUXURY SUITS: 23
+  MEN SUIT: 11
+  Exclusive Pret: 2

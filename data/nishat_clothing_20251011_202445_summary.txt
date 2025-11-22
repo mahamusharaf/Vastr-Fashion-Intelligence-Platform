@@ -1,0 +1,22 @@
+============================================================
+NISHAT LINEN CLOTHING COLLECTION - SCRAPING SUMMARY
+============================================================
+
+Scrape Date: 2025-10-11 20:24:45
+
+OVERVIEW:
+Total Clothing Items: 1060
+Available: 1057
+Out of Stock: 3
+Total Variants: 3072
+Total Images: 6393
+
+PRICE RANGE:
+Minimum: PKR 7.20
+Maximum: PKR 39500.00
+Average: PKR 7923.45
+
+PRODUCT TYPES:
+  Ready to Wear: 525
+  Pack Suit: 434
+  Meter: 101

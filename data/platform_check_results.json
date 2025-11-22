@@ -1,0 +1,128 @@
+[
+  {
+    "store": "Gul Ahmed",
+    "url": "https://www.gulahmedshop.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Nishat Linen",
+    "url": "https://nishatlinen.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Ethnic",
+    "url": "https://www.ethnic.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Khaadi",
+    "url": "https://pk.khaadi.com",
+    "platform": "Demandware/Salesforce",
+    "api_available": false,
+    "status": 200
+  },
+  {
+    "store": "Sapphire",
+    "url": "https://pk.sapphireonline.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Generation",
+    "url": "https://generation.com.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Alkaram",
+    "url": "https://www.alkaramstudio.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Bonanza Satrangi",
+    "url": "https://www.bonanzasatrangi.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Junaid Jamshed",
+    "url": "https://www.jj.com.pk",
+    "platform": "Magento",
+    "api_available": false,
+    "status": 200
+  },
+  {
+    "store": "Limelight",
+    "url": "https://www.limelight.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Maria B",
+    "url": "https://www.mariab.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Sana Safinaz",
+    "url": "https://www.sanasafinaz.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Zara Shahjahan",
+    "url": "https://www.zarashahjahan.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Outfitters",
+    "url": "https://www.outfitters.com.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Breakout",
+    "url": "https://www.breakout.com.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Ideas",
+    "url": "https://ideas.com.pk",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Zeen",
+    "url": "https://www.zeenwoman.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  },
+  {
+    "store": "Asim Jofa",
+    "url": "https://www.asimjofa.com",
+    "platform": "Shopify",
+    "api_available": true,
+    "status": 200
+  }
+]

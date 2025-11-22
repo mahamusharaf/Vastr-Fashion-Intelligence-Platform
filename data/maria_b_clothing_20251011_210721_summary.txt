@@ -1,0 +1,24 @@
+============================================================
+MARIA B CLOTHING COLLECTION - SCRAPING SUMMARY
+============================================================
+
+Scrape Date: 2025-10-11 21:07:21
+
+OVERVIEW:
+Total Clothing Items: 372
+Available: 368
+Out of Stock: 4
+Total Variants: 1716
+Total Images: 3044
+
+PRICE RANGE:
+Minimum: PKR 990.00
+Maximum: PKR 81990.00
+Average: PKR 25758.69
+
+PRODUCT TYPES:
+  Luxury Pret: 209
+  Luxury Formals: 128
+  Unstitched Lawn: 23
+  Unstitched Chiffon: 8
+  Unstitched Mbroidered: 4

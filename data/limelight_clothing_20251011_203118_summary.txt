@@ -1,0 +1,47 @@
+============================================================
+LIMELIGHT CLOTHING COLLECTION - SCRAPING SUMMARY
+============================================================
+
+Scrape Date: 2025-10-11 20:31:18
+
+OVERVIEW:
+Total Clothing Items: 1107
+Available: 1107
+Out of Stock: 0
+Total Variants: 3300
+Total Images: 7121
+
+PRICE RANGE:
+Minimum: PKR 799.50
+Maximum: PKR 21749.25
+Average: PKR 3526.77
+
+PRODUCT TYPES:
+  Unstitched Printed: 370
+  RTW: 299
+  TROUSERS: 103
+  Western: 90
+  Unstitched Embroidered: 85
+  Co-ords: 49
+  Eastern Top: 31
+  Trousers-Old: 14
+  Western-1: 12
+  Trousers: 11
+  Bottoms: 10
+  Unstitched Embroidery: 6
+  Winters: 5
+  Unstitched (Medium Emb)-1: 3
+  Winter: 3
+  Unstitched Emb-Old: 2
+  Tops: 2
+  Eastern Top-2: 2
+  Unstitched Trouser: 1
+  Unstitched Trouser-1: 1
+  Unstitched Printed-2: 1
+  Gold-1: 1
+  Gold-2: 1
+  Cutline (W/O Emb): 1
+  GOLD: 1
+  Ready to Wear: 1
+  Ready to Wear-Old: 1
+  Western-Old: 1

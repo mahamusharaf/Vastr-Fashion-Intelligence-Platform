@@ -1,0 +1,27 @@
+============================================================
+ETHNIC CLOTHING COLLECTION - SCRAPING SUMMARY
+============================================================
+
+Scrape Date: 2025-10-06 22:47:49
+
+OVERVIEW:
+Total Clothing Items: 265
+Available: 264
+Out of Stock: 1
+Total Variants: 1045
+Total Images: 1604
+
+PRICE RANGE:
+Minimum: PKR 1690.00
+Maximum: PKR 24990.00
+Average: PKR 10865.47
+
+PRODUCT TYPES:
+  Rozana: 111
+  Casual: 48
+  Basic: 32
+  Western: 29
+  Studio: 25
+  Fusion: 17
+  Unstitched-Rozana: 2
+  Bottom: 1
