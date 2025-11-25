@@ -318,16 +318,6 @@ class VastrDataSync:
         return stats
 
     def sync_all_brands(self) -> Dict:
-        """
-        Sync all brands
-        """
-        print("""
-    ╔═══════════════════════════════════════════════════════╗
-    ║                                                       ║
-    ║            VASTR DATA SYNC STARTING                   ║
-    ║                                                       ║
-    ╚═══════════════════════════════════════════════════════╝
-        """)
 
         overall_stats = {
             'start_time': datetime.now(),

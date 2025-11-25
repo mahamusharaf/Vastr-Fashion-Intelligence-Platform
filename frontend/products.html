@@ -595,19 +595,12 @@
     <script>
         const API_BASE = 'http://localhost:8000/api/v1';
 
-        // State
         let currentPage = 1;
-        let currentFilters = {
-            brand: [],
-            category: [],
-            priceMin: null,
-            priceMax: null
-        };
+        let currentFilters = { brand: [], category: [], priceMin: null, priceMax: null };
         let currentSort = 'newest';
         let totalProducts = 0;
         const productsPerPage = 20;
 
-        // Parse URL params on load
         function parseURLParams() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('category')) {
@@ -615,234 +608,151 @@
                 document.getElementById('breadcrumbText').textContent = params.get('category');
             }
             if (params.get('brand')) {
-                currentFilters.brand = [params.get('brand')];
+                currentFilters.brand = [decodeURIComponent(params.get('brand'))];
             }
         }
 
-        // Load Filter Options
         async function loadFilterOptions() {
-            // Load brands
             try {
-                const response = await fetch(`${API_BASE}/brands`);
-                const data = await response.json();
-
-                const brandFilters = document.getElementById('brandFilters');
-                brandFilters.innerHTML = data.brands.map(b => `
+                const res = await fetch(`${API_BASE}/brands`);
+                const data = await res.json();
+                document.getElementById('brandFilters').innerHTML = data.brands.map(b => `
                     <div class="filter-option">
-                        <input type="checkbox" id="brand-${b.brand_id}" value="${b.brand_id}"
-                               onchange="applyFilters()" ${currentFilters.brand.includes(b.brand_id) ? 'checked' : ''}>
-                        <label for="brand-${b.brand_id}">${b.brand_name}</label>
-                        <span class="filter-count">${b.product_count}</span>
+                        <input type="checkbox" id="b-${b.brand_id}" value="${b.brand_name}" onchange="applyFilters()">
+                        <label for="b-${b.brand_id}">${b.brand_name}</label>
+                        <span class="filter-count">(${b.product_count})</span>
                     </div>
                 `).join('');
-            } catch (error) {
-                console.error('Error loading brands:', error);
-            }
+            } catch (e) { console.error(e); }
 
-            // Load categories
             try {
-                const response = await fetch(`${API_BASE}/categories`);
-                const data = await response.json();
-
-                const categoryFilters = document.getElementById('categoryFilters');
-                categoryFilters.innerHTML = data.categories.map(c => `
+                const res = await fetch(`${API_BASE}/categories`);
+                const data = await res.json();
+                document.getElementById('categoryFilters').innerHTML = (data.categories || []).map(c => `
                     <div class="filter-option">
-                        <input type="checkbox" id="cat-${c.category_name}" value="${c.category_name}"
-                               onchange="applyFilters()" ${currentFilters.category.includes(c.category_name) ? 'checked' : ''}>
-                        <label for="cat-${c.category_name}">${c.category_name}</label>
-                        <span class="filter-count">${c.product_count}</span>
+                        <input type="checkbox" id="c-${c.category_name}" value="${c.category_name}" onchange="applyFilters()">
+                        <label for="c-${c.category_name}">${c.category_name}</label>
+                        <span class="filter-count">(${c.product_count})</span>
                     </div>
                 `).join('');
-            } catch (error) {
-                console.error('Error loading categories:', error);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Load Products
         async function loadProducts() {
             try {
-                // Build query params
-                let params = new URLSearchParams({
-                    page: currentPage,
-                    limit: productsPerPage
+                const params = new URLSearchParams({
+                    limit: productsPerPage,
+                    page: currentPage
                 });
 
-                // Add filters
-                if (currentFilters.brand.length > 0) {
-                    params.append('brand_id', currentFilters.brand[0]); // API supports single brand
-                }
-                if (currentFilters.category.length > 0) {
-                    params.append('product_type', currentFilters.category[0]);
-                }
-                if (currentFilters.priceMin) {
-                    params.append('price_min', currentFilters.priceMin);
-                }
-                if (currentFilters.priceMax) {
-                    params.append('price_max', currentFilters.priceMax);
-                }
+                currentFilters.brand.forEach(b => params.append('brand', b));
+                currentFilters.category.forEach(c => params.append('category', c));
+                if (currentSort === 'price-asc') params.set('sort', 'price_asc');
+                if (currentSort === 'price-desc') params.set('sort', 'price_desc');
+                if (currentFilters.priceMin !== null) params.set('price_min', currentFilters.priceMin);
+                if (currentFilters.priceMax !== null) params.set('price_max', currentFilters.priceMax);
 
-                // Add sort
-                if (currentSort === 'price-asc') {
-                    params.append('sort_by', 'price_asc');
-                } else if (currentSort === 'price-desc') {
-                    params.append('sort_by', 'price_desc');
-                }
+                console.log("Request →", `${API_BASE}/products?${params}`);
 
-                const response = await fetch(`${API_BASE}/products?${params}`);
-                const data = await response.json();
+                const res = await fetch(`${API_BASE}/products?${params}`);
+                const data = await res.json();
 
                 totalProducts = data.total_products || 0;
                 displayProducts(data.products || []);
                 updateResultsCount();
                 updatePagination();
-            } catch (error) {
-                console.error('Error loading products:', error);
-                document.getElementById('productGrid').innerHTML =
-                    '<div class="no-results"><h3>Unable to load products</h3><p>Make sure your backend is running at http://localhost:8000</p></div>';
+            } catch (err) {
+                console.error(err);
+                document.getElementById('productGrid').innerHTML = '<div class="no-results"><h3>Backend not running</h3><p>Start uvicorn main:app --reload</p></div>';
             }
         }
 
-        // Display Products
+        function getImageUrl(url) {
+            if (!url || url.includes('placeholder')) return url || 'https://via.placeholder.com/600x800/f5f5f5/999?text=No+Image';
+            return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=600&h=800&fit=cover&output=webp&q=85`;
+        }
+
         function displayProducts(products) {
             const grid = document.getElementById('productGrid');
-
-            if (products.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <h3>No products found</h3>
-                        <p>Try adjusting your filters</p>
-                    </div>
-                `;
+            if (!products.length) {
+                grid.innerHTML = '<div class="no-results"><h3>No products found</h3><p></div>';
                 return;
             }
-
-            grid.innerHTML = products.map(p => `
-                <div class="product-card" onclick="viewProduct('${p.product_id}')">
-                    <div class="product-image">
-                        ${p.images && p.images[0] ?
-                            `<img src="${p.images[0]}" alt="${p.title}">` :
-                            '🛍️'}
-                    </div>
-                    <div class="product-brand">${p.brand_name || 'Brand'}</div>
-                    <div class="product-title">${p.title.substring(0, 60)}${p.title.length > 60 ? '...' : ''}</div>
-                    <div class="product-price">PKR ${p.price_min.toLocaleString()}</div>
-                </div>
-            `).join('');
+            grid.innerHTML = products.map(p => {
+                const img = p.images && p.images.length > 0 ? p.images[0] : null;
+                return `
+                    <div class="product-card" onclick="viewProduct('${p.product_id}')">
+                        <div class="product-image">
+                            <img src="${getImageUrl(img)}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x800/f5f5f5/999?text=No+Image'" alt="${p.title}">
+                        </div>
+                        <div class="product-brand">${p.brand_name || 'Brand'}</div>
+                        <div class="product-title">${p.title.substring(0, 60)}${p.title.length > 60 ? '...' : ''}</div>
+                        <div class="product-price">PKR ${p.price_min?.toLocaleString() || 'N/A'}</div>
+                    </div>`;
+            }).join('');
         }
 
-        // Update Results Count
         function updateResultsCount() {
-            document.getElementById('resultsCount').innerHTML =
-                `<strong>${totalProducts.toLocaleString()}</strong> products`;
+            document.getElementById('resultsCount').innerHTML = `<strong>${totalProducts.toLocaleString()}</strong> products`;
         }
 
-        // Update Pagination
         function updatePagination() {
-            const totalPages = Math.ceil(totalProducts / productsPerPage);
-            const pagination = document.getElementById('pagination');
+            const pages = Math.ceil(totalProducts / productsPerPage);
+            const div = document.getElementById('pagination');
+            if (pages <= 1) { div.innerHTML = ''; return; }
 
-            if (totalPages <= 1) {
-                pagination.innerHTML = '';
-                return;
+            let html = `<button onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>Previous</button>`;
+            for (let i = 1; i <= Math.min(pages, 7); i++) {
+                html += `<button class="${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
             }
-
-            let html = `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
-
-            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-                html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-            }
-
-            if (totalPages > 5) {
-                html += `<button disabled>...</button>`;
-            }
-
-            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
-
-            pagination.innerHTML = html;
+            if (pages > 7) html += `<span>...</span>`;
+            html += `<button onclick="goToPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>Next</button>`;
+            div.innerHTML = html;
         }
 
-        // Go to Page
-        function goToPage(page) {
-            if (page < 1) return;
-            currentPage = page;
-            loadProducts();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Apply Filters
-        function applyFilters() {
-            // Get selected brands
-            currentFilters.brand = Array.from(document.querySelectorAll('#brandFilters input:checked'))
-                .map(cb => cb.value);
-
-            // Get selected categories
-            currentFilters.category = Array.from(document.querySelectorAll('#categoryFilters input:checked'))
-                .map(cb => cb.value);
-
-            // Get price range
-            const priceChecked = document.querySelector('input[id^="price"]:checked');
-            if (priceChecked) {
-                const [min, max] = priceChecked.value.split('-');
-                currentFilters.priceMin = parseInt(min);
-                currentFilters.priceMax = parseInt(max);
-            } else {
-                currentFilters.priceMin = null;
-                currentFilters.priceMax = null;
-            }
-
-            currentPage = 1;
-            loadProducts();
-        }
-
-        // Apply Sort
-        function applySort() {
-            currentSort = document.getElementById('sortSelect').value;
-            currentPage = 1;
-            loadProducts();
-        }
-
-        // Clear All Filters
+        function goToPage(p) { if (p < 1) return; currentPage = p; loadProducts(); window.scrollTo(0,0); }
+        function applySort() { currentSort = document.getElementById('sortSelect').value; currentPage = 1; loadProducts(); }
         function clearAllFilters() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('input[type=checkbox]').forEach(x => x.checked = false);
             currentFilters = { brand: [], category: [], priceMin: null, priceMax: null };
             currentPage = 1;
             loadProducts();
         }
+        function applyFilters() {
+            currentFilters.brand = Array.from(document.querySelectorAll('#brandFilters input:checked')).map(x => x.value);
+            currentFilters.category = Array.from(document.querySelectorAll('#categoryFilters input:checked')).map(x => x.value);
 
-        // View Product
-        function viewProduct(id) {
-            alert(`Product: ${id}\n\nProduct detail page coming next!`);
-        }
-
-        // Search from Nav
-        function searchFromNav() {
-            const query = document.getElementById('navSearchInput').value;
-            if (query.trim()) {
-                alert(`Searching for: "${query}"\n\nSearch functionality coming next!`);
+            const price = document.querySelector('input[id^="price"]:checked');
+            if (price) {
+                const [min, max] = price.value.split('-');
+                currentFilters.priceMin = +min;
+                currentFilters.priceMax = +max === 999999 ? null : +max;
+            } else {
+                currentFilters.priceMin = currentFilters.priceMax = null;
             }
-        }
 
-        // Toggle Mobile Filters
-        function toggleMobileFilters() {
-            document.getElementById('sidebar').classList.toggle('active');
+            currentPage = 1;
+            loadProducts();
         }
+        function toggleMobileFilters() { document.getElementById('sidebar').classList.toggle('active'); }
+        function viewProduct(id) { alert('Product detail page coming soon!\nID: ' + id); }
 
-        // Initialize
+        // Price radio behavior
+        document.querySelectorAll('input[id^="price"]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                if (cb.checked) {
+                    document.querySelectorAll('input[id^="price"]').forEach(other => {
+                        if (other !== cb) other.checked = false;
+                    });
+                    applyFilters();
+                }
+            });
+
         window.onload = () => {
             parseURLParams();
             loadFilterOptions();
             loadProducts();
         };
-
-        // Price filter change
-        document.querySelectorAll('input[id^="price"]').forEach(cb => {
-            cb.addEventListener('change', () => {
-                document.querySelectorAll('input[id^="price"]').forEach(other => {
-                    if (other !== cb) other.checked = false;
-                });
-                applyFilters();
-            });
-        });
     </script>
 </body>
 </html>

@@ -230,10 +230,30 @@
         }
 
         .product-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-        }
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1400px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
 
         .product-card {
             cursor: pointer;
@@ -419,7 +439,7 @@
 <body>
     <!-- Top Banner -->
     <div class="top-bar">
-        FREE SHIPPING ON ORDERS OVER PKR 5,000
+        CURATED PAKISTANI FASHION • NEW ARRIVALS DAILY
     </div>
 
     <!-- Navigation -->
@@ -429,7 +449,6 @@
         <div class="nav-center">
             <div class="nav-links">
                 <a href="#women">WOMEN</a>
-                <a href="#men">MEN</a>
                 <a href="#brands">BRANDS</a>
                 <a href="#sale">SALE</a>
             </div>
@@ -456,13 +475,6 @@
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </button>
-            <button class="nav-icon" title="Cart">
-                <svg viewBox="0 0 24 24">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-            </button>
         </div>
     </nav>
 
@@ -471,34 +483,103 @@
         <h1>Shop fashion from 3,000+ products across Pakistan's top brands</h1>
     </section>
 
-    <!-- Categories Horizontal Scroll -->
-    <section class="categories">
-        <div class="category-scroll" id="categoryScroll">
-            <div class="loading">Loading categories...</div>
-        </div>
-    </section>
 
     <!-- Featured Products -->
-    <div class="section-header">
-        <h2>Trending Now</h2>
-        <span class="view-all" onclick="viewAllProducts()">View All</span>
+<div class="section-header">
+    <h2>Latest Arrivals</h2>
+    <span class="view-all" onclick="viewAllProducts()">View All</span>
+</div>
+<section class="products-section">
+    <div class="product-grid" id="productGrid">
+        <div class="loading">Loading products...</div>
     </div>
-    <section class="products-section">
-        <div class="product-grid" id="productGrid">
-            <div class="loading">Loading products...</div>
-        </div>
-    </section>
+</section>
+    <!-- SHOP BY BRAND — WITH LOGOS (NEW FINAL VERSION) -->
+<section class="brands-section">
+    <div class="section-header">
+        <h2>Shop by Brand</h2>
+        <a href="products.html" class="view-all">View All Brands</a>
+    </div>
+    <div class="brands-grid" id="brandsGrid">
+        <div class="loading">Loading brands...</div>
+    </div>
+</section>
 
-    <!-- Brands Section -->
-    <section class="brands-section">
-        <div class="section-header" style="padding: 0;">
-            <h2>Shop by Brand</h2>
-            <span class="view-all" onclick="viewAllBrands()">View All Brands</span>
-        </div>
-        <div class="brands-grid" id="brandsGrid">
-            <div class="loading">Loading brands...</div>
-        </div>
-    </section>
+<style>
+    .brands-section { padding: 4rem 5%; background: #fafafa; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .section-header h2 { font-size: 1.8rem; font-weight: 600; }
+    .view-all { font-size: 0.9rem; color: #000; text-decoration: none; border-bottom: 1px solid #000; padding-bottom: 2px; }
+    .view-all:hover { opacity: 0.7; }
+    .brands-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    .brand-card {
+        background: #fff;
+        padding: 2rem 1rem;
+        text-align: center;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .brand-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    .brand-logo {
+        width: 100%;
+        height: 90px;
+        object-fit: contain;
+        margin-bottom: 1rem;
+        filter: grayscale(100%);
+        transition: filter 0.4s;
+    }
+    .brand-card:hover .brand-logo { filter: grayscale(0%); }
+    .brand-name { font-weight: 600; font-size: 1rem; }
+    .brand-count { font-size: 0.85rem; color: #666; margin-top: 0.5rem; }
+    @media (max-width: 1024px) { .brands-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 768px) { .brands-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+</style>
+
+<script>
+    async function loadBrandsWithLogos() {
+        try {
+            const res = await fetch('http://localhost:8000/api/v1/brands');
+            const data = await res.json();
+
+            const topBrands = data.brands
+                .sort((a, b) => b.product_count - a.product_count)
+                .slice(0, 12);
+
+            document.getElementById('brandsGrid').innerHTML = topBrands.map(b => {
+                const logoPng = `logos/${b.brand_id}.png`;
+                const logoWebp = `logos/${b.brand_id}.webp`;
+                const placeholder = `https://via.placeholder.com/300x120/ffffff/999999?text=${b.brand_name.split(' ').map(w=>w[0]).join('')}`;
+
+                return `
+                    <div class="brand-card" onclick="location.href='products.html?brand=${encodeURIComponent(b.brand_name)}'">
+                        <img src="${logoPng}"
+                             alt="${b.brand_name}"
+                             class="brand-logo"
+                             onerror="this.onerror=null; this.src='${logoWebp}'; this.onerror=function(){this.src='${placeholder}'}">
+                        <div class="brand-name">${b.brand_name}</div>
+                        <div class="brand-count">${b.product_count.toLocaleString()} items</div>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            document.getElementById('brandsGrid').innerHTML = '<p style="text-align:center; color:#999; grid-column: 1/-1;">Failed to load brands</p>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadBrandsWithLogos);
+</script>
+
 
     <!-- Footer -->
     <footer>
@@ -537,121 +618,222 @@
         </div>
     </footer>
 
-       <script>
+        <script>
+        // API Configuration
         const API_BASE = 'http://localhost:8000/api/v1';
 
-        // Load Categories
+        // Debounce function for search suggestions
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        async function loadBrandsWithLogos() {
+        try {
+            const res = await fetch('http://localhost:8000/api/v1/brands');
+            const data = await res.json();
+
+            const popularBrands = data.brands
+                .sort((a, b) => b.product_count - a.product_count)
+                .slice(0, 12); // Show top 12 brands
+
+            document.getElementById('brandsGrid').innerHTML = popularBrands.map(b => {
+                const logoUrl = `logos/${b.brand_id}.png`; // We'll create this folder
+                return `
+                    <div class="brand-card" onclick="location.href='products.html?brand=${encodeURIComponent(b.brand_name)}'">
+                        <img src="${logoUrl}" alt="${b.brand_name}" class="brand-logo"
+                             onerror="this.src='https://via.placeholder.com/200x80/f5f5f5/999?text=${b.brand_name.split(' ').map(w=>w[0]).join('')}'">
+                        <div class="brand-name">${b.brand_name}</div>
+                        <div class="brand-count">${b.product_count.toLocaleString()} items</div>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            document.getElementById('brandsGrid').innerHTML = '<p style="text-align:center; color:#999;">Brands failed to load</p>';
+        }
+    }
+
+    // Call it when page loads
+    document.addEventListener('DOMContentLoaded', loadBrandsWithLogos);
+
+        // ==================== LOAD CATEGORIES ====================
         async function loadCategories() {
             try {
                 const response = await fetch(`${API_BASE}/categories`);
                 const data = await response.json();
 
                 const scroll = document.getElementById('categoryScroll');
-                scroll.innerHTML = data.categories.map(cat => `
-                    <div class="category-item" onclick="filterByCategory('${cat.category_name}')">
-                        <h3>${cat.category_name}</h3>
-                        <p>${cat.product_count.toLocaleString()}</p>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('categoryScroll').innerHTML =
-                    '<div class="loading">Start your backend to see categories</div>';
-            }
-        }
 
-        // Load Products
-        async function loadProducts() {
-            try {
-                const response = await fetch(`${API_BASE}/products?limit=12`);
-                const data = await response.json();
-
-                const grid = document.getElementById('productGrid');
-                grid.innerHTML = data.products.map(p => `
-                    <div class="product-card" onclick="viewProduct('${p.product_id}')">
-                        <div class="product-image">
-                            ${p.images && p.images[0] ?
-                                `<img src="${p.images[0]}" alt="${p.title}">` :
-                                '🛍️'}
+                if (data.categories && data.categories.length > 0) {
+                    scroll.innerHTML = data.categories.map(cat => `
+                        <div class="category-item" onclick="filterByCategory('${cat.category_name}')">
+                            <h3>${cat.category_name}</h3>
+                            <p>${cat.product_count.toLocaleString()} items</p>
                         </div>
-                        <div class="product-brand">${p.brand_name || 'Brand'}</div>
-                        <div class="product-title">${p.title.substring(0, 60)}${p.title.length > 60 ? '...' : ''}</div>
-                        <div class="product-price">PKR ${p.price_min.toLocaleString()}</div>
-                    </div>
-                `).join('');
+                    `).join('');
+                } else {
+                    scroll.innerHTML = '<div class="loading">No categories available</div>';
+                }
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('productGrid').innerHTML =
-                    '<div class="loading">Start your backend to see products</div>';
+                console.error('Categories error:', error);
+                document.getElementById('categoryScroll').innerHTML =
+                    '<div class="error-message">⚠️ Unable to load categories. Make sure your backend is running.</div>';
             }
         }
 
-        // Load Brands
-        async function loadBrands() {
-            try {
-                const response = await fetch(`${API_BASE}/brands`);
-                const data = await response.json();
+       // ==================== LOAD PRODUCTS (UPDATED WITH IMAGE PROXY) ====================
+async function loadProducts() {
+  try {
+    const response = await fetch(`${API_BASE}/products?limit=24`);
+    const data = await response.json();
+    const grid = document.getElementById('productGrid');
 
-                const grid = document.getElementById('brandsGrid');
-                grid.innerHTML = data.brands.slice(0, 6).map(b => `
-                    <div class="brand-item" onclick="filterByBrand('${b.brand_id}')">
-                        <h3>${b.brand_name}</h3>
-                        <p>${b.product_count.toLocaleString()} items</p>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('brandsGrid').innerHTML =
-                    '<div class="loading">Start your backend to see brands</div>';
-            }
+    if (data.products && data.products.length > 0) {
+      grid.innerHTML = data.products.map(p => {
+        // Extract raw image URL safely
+        let rawImageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999999?text=No+Image';
+
+        if (p.images && p.images.length > 0) {
+          if (typeof p.images[0] === 'string') {
+            rawImageUrl = p.images[0];
+          } else if (p.images[0]?.url) {
+            rawImageUrl = p.images[0].url;
+          } else if (p.images[0]?.src) {
+            rawImageUrl = p.images[0].src;
+          }
         }
 
-        // Actions
-        function searchProducts() {
-            const query = document.getElementById('navSearchInput').value;
-            if (query.trim()) {
+        // Use images.weserv.nl proxy to bypass CORS + hotlinking block
+        const proxyUrl = rawImageUrl.includes('placeholder')
+          ? rawImageUrl
+          : `https://images.weserv.nl/?url=${encodeURIComponent(rawImageUrl)}&w=600&h=800&fit=cover&output=webp&q=85`;
+
+        const priceDisplay = p.price_min
+          ? `PKR ${p.price_min.toLocaleString()}`
+          : 'Price on request';
+
+        return `
+          <div class="product-card" onclick="viewProduct('${p.product_id}')">
+            <div class="product-image">
+              <img src="${proxyUrl}"
+                   alt="${p.title}"
+                   loading="lazy"
+                   onerror="this.src='https://via.placeholder.com/300x400/f5f5f5/999999?text=No+Image'">
+              ${!p.available ? '<div class="product-badge">SOLD OUT</div>' : ''}
+            </div>
+            <div class="product-brand">${p.brand_name || 'Brand'}</div>
+            <div class="product-title">${p.title}</div>
+            <div class="product-price">${priceDisplay}</div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      grid.innerHTML = '<div class="loading">No products available</div>';
+    }
+  } catch (error) {
+    console.error('Products error:', error);
+    document.getElementById('productGrid').innerHTML =
+      '<div class="error-message">Unable to load products. Is your backend running?</div>';
+  }
+}
+
+
+
+        // ==================== SEARCH FUNCTIONALITY ====================
+        async function performSearch() {
+            const query = document.getElementById('navSearchInput').value.trim();
+            if (query) {
                 // Redirect to products page with search query
                 window.location.href = `products.html?search=${encodeURIComponent(query)}`;
             }
         }
 
-        function filterByCategory(cat) {
-            // Redirect to products page filtered by category
-            window.location.href = `products.html?category=${encodeURIComponent(cat)}`;
+        // Search suggestions with debouncing
+        const loadSearchSuggestions = debounce(async function(query) {
+            if (query.length < 2) {
+                document.getElementById('searchSuggestions').classList.remove('active');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
+                const data = await response.json();
+
+                const suggestionsDiv = document.getElementById('searchSuggestions');
+
+                if (data.suggestions && data.suggestions.length > 0) {
+                    suggestionsDiv.innerHTML = data.suggestions.map(s => `
+                        <div class="suggestion-item" onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')">${s}</div>
+                    `).join('');
+                    suggestionsDiv.classList.add('active');
+                } else {
+                    suggestionsDiv.classList.remove('active');
+                }
+            } catch (error) {
+                console.error('Suggestions error:', error);
+            }
+        }, 300);
+
+        function selectSuggestion(suggestion) {
+            document.getElementById('navSearchInput').value = suggestion;
+            document.getElementById('searchSuggestions').classList.remove('active');
+            performSearch();
         }
 
-        function filterByBrand(brand) {
-            // Redirect to products page filtered by brand
-            window.location.href = `products.html?brand=${encodeURIComponent(brand)}`;
+        // ==================== NAVIGATION FUNCTIONS ====================
+        function filterByCategory(category) {
+            window.location.href = `products.html?category=${encodeURIComponent(category)}`;
         }
 
-        function viewProduct(id) {
-            // Redirect to product detail page (coming next!)
-            alert(`Product detail page coming next!\nProduct ID: ${id}`);
-            // Later: window.location.href = `product-detail.html?id=${id}`;
+        function filterByBrand(brandId) {
+            window.location.href = `products.html?brand=${encodeURIComponent(brandId)}`;
+        }
+
+        function filterByGender(gender) {
+            window.location.href = `products.html?gender=${encodeURIComponent(gender)}`;
+        }
+
+        function viewProduct(productId) {
+            window.location.href = `product-detail.html?id=${encodeURIComponent(productId)}`;
         }
 
         function viewAllProducts() {
-            // Redirect to all products page
             window.location.href = 'products.html';
         }
 
         function viewAllBrands() {
-            // Redirect to all brands page
-            window.location.href = 'products.html';
+            window.location.href = 'products.html?view=brands';
         }
 
-        // Load on page load
-        window.onload = () => {
-            loadCategories();
-            loadProducts();
-            loadBrands();
-        };
-
-        // Search on Enter
-        document.getElementById('navSearchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') searchProducts();
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('navSearchInput').addEventListener('input', (e) => {
+            loadSearchSuggestions(e.target.value);
         });
+
+        document.getElementById('navSearchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-search')) {
+                document.getElementById('searchSuggestions').classList.remove('active');
+            }
+        });
+
+      // ==================== INITIALIZE ON PAGE LOAD ====================
+    window.addEventListener('DOMContentLoaded', () => {
+    loadProducts();  // Load products directly
+    loadBrands();
+});
     </script>
 </body>
 </html>
