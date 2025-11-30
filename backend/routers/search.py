@@ -5,8 +5,6 @@ from pydantic import BaseModel, Field
 import sys
 
 sys.path.append('..')
-
-# Import your hybrid search engine
 from backend.hybrid_search import VastrHybridSearch
 
 # Initialize search engine (singleton pattern)
@@ -19,11 +17,6 @@ def get_search_engine():
     if search_engine is None:
         search_engine = VastrHybridSearch()
     return search_engine
-
-
-# ============================================
-# PYDANTIC MODELS
-# ============================================
 
 class SearchFilters(BaseModel):
     """Search filters model"""

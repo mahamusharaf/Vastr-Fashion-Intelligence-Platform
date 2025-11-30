@@ -1,0 +1,427 @@
+
+            <!-- Category Filter -->
+            <div class="filter-section">
+                <h3 class="filter-title">Category</h3>
+                <div id="categoryFilters">
+                    <div class="loading" style="padding: 1rem 0; font-size: 0.8rem;">Loading...</div>
+                </div>
+            </div>
+
+
+
+
+        <script>
+        // API Configuration
+        const API_BASE = 'http://localhost:8000/api/v1';
+
+        // Debounce function for search suggestions
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        async function loadBrandsWithLogos() {
+        try {
+            const res = await fetch('http://localhost:8000/api/v1/brands');
+            const data = await res.json();
+
+            const popularBrands = data.brands
+                .sort((a, b) => b.product_count - a.product_count)
+                .slice(0, 12); // Show top 12 brands
+
+            document.getElementById('brandsGrid').innerHTML = popularBrands.map(b => {
+                const logoUrl = `logos/${b.brand_id}.png`; // We'll create this folder
+                return `
+                    <div class="brand-card" onclick="location.href='products.html?brand=${encodeURIComponent(b.brand_name)}'">
+                        <img src="${logoUrl}" alt="${b.brand_name}" class="brand-logo"
+                             onerror="this.src='https://via.placeholder.com/200x80/f5f5f5/999?text=${b.brand_name.split(' ').map(w=>w[0]).join('')}'">
+                        <div class="brand-name">${b.brand_name}</div>
+                        <div class="brand-count">${b.product_count.toLocaleString()} items</div>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            document.getElementById('brandsGrid').innerHTML = '<p style="text-align:center; color:#999;">Brands failed to load</p>';
+        }
+    }
+
+    // Call it when page loads
+    document.addEventListener('DOMContentLoaded', loadBrandsWithLogos);
+
+        // ==================== LOAD CATEGORIES ====================
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/categories`);
+                const data = await response.json();
+
+                const scroll = document.getElementById('categoryScroll');
+
+                if (data.categories && data.categories.length > 0) {
+                    scroll.innerHTML = data.categories.map(cat => `
+                        <div class="category-item" onclick="filterByCategory('${cat.category_name}')">
+                            <h3>${cat.category_name}</h3>
+                            <p>${cat.product_count.toLocaleString()} items</p>
+                        </div>
+                    `).join('');
+                } else {
+                    scroll.innerHTML = '<div class="loading">No categories available</div>';
+                }
+            } catch (error) {
+                console.error('Categories error:', error);
+                document.getElementById('categoryScroll').innerHTML =
+                    '<div class="error-message">⚠️ Unable to load categories. Make sure your backend is running.</div>';
+            }
+        }
+
+       // ==================== LOAD PRODUCTS (UPDATED WITH IMAGE PROXY) ====================
+async function loadProducts() {
+  try {
+    const response = await fetch(`${API_BASE}/products?limit=24`);
+    const data = await response.json();
+    const grid = document.getElementById('productGrid');
+
+    if (data.products && data.products.length > 0) {
+      grid.innerHTML = data.products.map(p => {
+        // Extract raw image URL safely
+        let rawImageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999999?text=No+Image';
+
+        if (p.images && p.images.length > 0) {
+          if (typeof p.images[0] === 'string') {
+            rawImageUrl = p.images[0];
+          } else if (p.images[0]?.url) {
+            rawImageUrl = p.images[0].url;
+          } else if (p.images[0]?.src) {
+            rawImageUrl = p.images[0].src;
+          }
+        }
+
+        // Use images.weserv.nl proxy to bypass CORS + hotlinking block
+        const proxyUrl = rawImageUrl.includes('placeholder')
+          ? rawImageUrl
+          : `https://images.weserv.nl/?url=${encodeURIComponent(rawImageUrl)}&w=600&h=800&fit=cover&output=webp&q=85`;
+
+        const priceDisplay = p.price_min
+          ? `PKR ${p.price_min.toLocaleString()}`
+          : 'Price on request';
+
+        return `
+          <div class="product-card" onclick="viewProduct('${p.product_id}')">
+            <div class="product-image">
+              <img src="${proxyUrl}"
+                   alt="${p.title}"
+                   loading="lazy"
+                   onerror="this.src='https://via.placeholder.com/300x400/f5f5f5/999999?text=No+Image'">
+              ${!p.available ? '<div class="product-badge">SOLD OUT</div>' : ''}
+            </div>
+            <div class="product-brand">${p.brand_name || 'Brand'}</div>
+            <div class="product-title">${p.title}</div>
+            <div class="product-price">${priceDisplay}</div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      grid.innerHTML = '<div class="loading">No products available</div>';
+    }
+  } catch (error) {
+    console.error('Products error:', error);
+    document.getElementById('productGrid').innerHTML =
+      '<div class="error-message">Unable to load products. Is your backend running?</div>';
+  }
+}
+
+
+
+
+        // ==================== NAVIGATION FUNCTIONS ====================
+        function filterByCategory(category) {
+            window.location.href = `products.html?category=${encodeURIComponent(category)}`;
+        }
+
+        function filterByBrand(brandId) {
+            window.location.href = `products.html?brand=${encodeURIComponent(brandId)}`;
+        }
+
+        function filterByGender(gender) {
+            window.location.href = `products.html?gender=${encodeURIComponent(gender)}`;
+        }
+
+        function viewProduct(productId) {
+            window.location.href = `product-detail.html?id=${encodeURIComponent(productId)}`;
+        }
+
+        function viewAllProducts() {
+            window.location.href = 'products.html';
+        }
+
+        function viewAllBrands() {
+            window.location.href = 'products.html?view=brands';
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('navSearchInput').addEventListener('input', (e) => {
+            loadSearchSuggestions(e.target.value);
+        });
+
+        document.getElementById('navSearchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-search')) {
+                document.getElementById('searchSuggestions').classList.remove('active');
+            }
+        });
+
+      // ==================== INITIALIZE ON PAGE LOAD ====================
+    window.addEventListener('DOMContentLoaded', () => {
+    loadProducts();  // Load products directly
+    loadBrands();
+});
+
+let suggestionTimeout;
+
+// ==================== SEARCH SUGGESTIONS ====================
+async function loadSearchSuggestions(query) {
+    if (!query || query.length < 2) {
+        document.getElementById('searchSuggestions').classList.remove('active');
+        return;
+    }
+
+    clearTimeout(suggestionTimeout);
+    suggestionTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
+            const data = await response.json();
+
+            const suggestionsDiv = document.getElementById('searchSuggestions');
+
+            if (data.suggestions && data.suggestions.length > 0) {
+                suggestionsDiv.innerHTML = data.suggestions.map(suggestion => `
+                    <div class="suggestion-item" onclick="selectSuggestion('${suggestion.replace(/'/g, "\\'")}')">
+                        <svg class="suggestion-icon" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="2"></circle>
+                            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"></path>
+                        </svg>
+                        <span class="suggestion-text">${suggestion}</span>
+                    </div>
+                `).join('');
+                suggestionsDiv.classList.add('active');
+            } else {
+                suggestionsDiv.classList.remove('active');
+            }
+        } catch (error) {
+            console.error('Suggestions error:', error);
+        }
+    }, 300);
+}
+
+function selectSuggestion(suggestion) {
+    document.getElementById('navSearchInput').value = suggestion;
+    document.getElementById('searchSuggestions').classList.remove('active');
+    performSearch();
+}
+
+function performSearch() {
+    const query = document.getElementById('navSearchInput').value.trim();
+    if (query) {
+        window.location.href = `products.html?q=${encodeURIComponent(query)}`;
+    }
+}
+
+// Add event listeners
+document.getElementById('navSearchInput').addEventListener('input', (e) => {
+    loadSearchSuggestions(e.target.value);
+});
+
+document.getElementById('navSearchInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-search')) {
+        document.getElementById('searchSuggestions').classList.remove('active');
+    }
+});
+
+    </script>
+
+    product.html
+    async function loadProducts() {
+    try {
+        const params = new URLSearchParams({
+            limit: productsPerPage,
+            page: currentPage
+        });
+
+        // Add brand filters
+        if (currentFilters.brand.length > 0) {
+            currentFilters.brand.forEach(b => params.append('brand', b));
+        }
+
+        // Add category filters
+        if (currentFilters.category.length > 0) {
+            currentFilters.category.forEach(c => params.append('category', c));
+        }
+
+        // Add price filters
+        if (currentFilters.priceMin !== null) {
+            params.append('price_min', currentFilters.priceMin);
+        }
+        if (currentFilters.priceMax !== null) {
+            params.append('price_max', currentFilters.priceMax);
+        }
+
+        // Add sort
+        if (currentSort === 'price-asc') {
+            params.append('sort', 'price_asc');
+        } else if (currentSort === 'price-desc') {
+            params.append('sort', 'price_desc');
+        }
+
+        console.log('Fetching:', `${API_BASE}/products?${params}`);
+
+        const res = await fetch(`${API_BASE}/products?${params}`);
+
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        console.log("API response:", data);
+
+        // Direct extraction
+        const products = data.products || [];
+        const total = data.total_products || 0;
+
+        totalProducts = total;
+        displayProducts(products);
+        updateResultsCount();
+        updatePagination();
+
+    } catch (err) {
+        console.error("Load products error:", err);
+        document.getElementById('productGrid').innerHTML = `
+            <div class="no-results">
+                <h3>Connection Error</h3>
+                <p>${err.message}</p>
+                <p>Check if your API is running: <a href="http://localhost:8000/docs" target="_blank">http://localhost:8000/docs</a></p>
+            </div>`;
+    }
+}
+
+function displayProducts(products) {
+    const grid = document.getElementById('productGrid');
+
+    if (!products || products.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results" style="grid-column: 1/-1;">
+                <h3>No products found</h3>
+                <p>Try adjusting your filters</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = products.map(p => {
+        // Defensive field extraction - handles multiple possible field names
+        const productName = p.product_name || p.title || p.name || 'Unnamed Product';
+        const brandName = p.brand_name || p.brand || 'VASTR';
+        const price = p.price_min || p.price || p.current_price || 0;
+
+        // Handle different image field structures
+        let imageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999?text=No+Image';
+        if (p.image_urls && p.image_urls[0]) {
+            imageUrl = p.image_urls[0];
+        } else if (p.images && p.images[0]) {
+            imageUrl = typeof p.images[0] === 'string' ? p.images[0] : (p.images[0].url || p.images[0].src);
+        } else if (p.image_url) {
+            imageUrl = p.image_url;
+        }
+
+        // Use image proxy to avoid CORS issues
+        const proxyImageUrl = imageUrl.includes('placeholder')
+            ? imageUrl
+            : `https://images.weserv.nl/?url=${encodeURIComponent(imageUrl)}&w=600&h=800&fit=cover&output=webp&q=85`;
+
+        return `
+            <div class="product-card" onclick="viewProduct('${p._id || p.product_id}')">
+                <div class="product-image">
+                    <img src="${proxyImageUrl}"
+                         alt="${productName}"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400/f5f5f5/999?text=No+Image';">
+                </div>
+                <div class="product-brand">${brandName}</div>
+                <div class="product-title">${productName}</div>
+                <div class="product-price">PKR ${price.toLocaleString()}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+
+home -load products
+async function loadProducts() {
+  try {
+    const response = await fetch(`${API_BASE}/products?limit=24`);
+    const data = await response.json();
+    const grid = document.getElementById('productGrid');
+
+    if (data.products && data.products.length > 0) {
+      grid.innerHTML = data.products.map(p => {
+        // Extract raw image URL safely
+        let rawImageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999999?text=No+Image';
+
+        if (p.images && p.images.length > 0) {
+          if (typeof p.images[0] === 'string') {
+            rawImageUrl = p.images[0];
+          } else if (p.images[0]?.url) {
+            rawImageUrl = p.images[0].url;
+          } else if (p.images[0]?.src) {
+            rawImageUrl = p.images[0].src;
+          }
+        }
+
+        // Use images.weserv.nl proxy to bypass CORS + hotlinking block
+        const proxyUrl = rawImageUrl.includes('placeholder')
+          ? rawImageUrl
+          : `https://images.weserv.nl/?url=${encodeURIComponent(rawImageUrl)}&w=600&h=800&fit=cover&output=webp&q=85`;
+
+        const priceDisplay = p.price_min
+          ? `PKR ${p.price_min.toLocaleString()}`
+          : 'Price on request';
+
+        return `
+          <div class="product-card" onclick="viewProduct('${p.product_id}')">
+            <div class="product-image">
+              <img src="${proxyUrl}"
+                   alt="${p.title}"
+                   loading="lazy"
+                   onerror="this.src='https://via.placeholder.com/300x400/f5f5f5/999999?text=No+Image'">
+              ${!p.available ? '<div class="product-badge">SOLD OUT</div>' : ''}
+            </div>
+            <div class="product-brand">${p.brand_name || 'Brand'}</div>
+            <div class="product-title">${p.title}</div>
+            <div class="product-price">${priceDisplay}</div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      grid.innerHTML = '<div class="loading">No products available</div>';
+    }
+  } catch (error) {
+    console.error('Products error:', error);
+    document.getElementById('productGrid').innerHTML =
+      '<div class="error-message">Unable to load products. Is your backend running?</div>';
+  }
+}

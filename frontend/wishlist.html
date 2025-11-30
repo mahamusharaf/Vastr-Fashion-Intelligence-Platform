@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - Vastr</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.5;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #000;
+            color: #fff;
+            padding: 0.5rem 5%;
+            font-size: 0.75rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* Navigation */
+        nav {
+            background: #fff;
+            padding: 1rem 5%;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            gap: 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #000;
+            text-decoration: none;
+            letter-spacing: -1px;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #000;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.6;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-icon {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            opacity: 0.6;
+        }
+
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: #000;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .nav-icon.active svg {
+            fill: #000;
+        }
+
+        .wishlist-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #000;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.15rem 0.4rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            padding: 1.5rem 5%;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #000;
+        }
+
+        .breadcrumb span {
+            color: #000;
+            font-weight: 500;
+        }
+
+        /* Wishlist Container */
+        .wishlist-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+
+        .wishlist-header {
+            margin-bottom: 2rem;
+        }
+
+        .wishlist-header h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .wishlist-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #e8e8e8;
+            background: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #000;
+        }
+
+        .sort-dropdown {
+            padding: 0.6rem 2rem 0.6rem 1rem;
+            border: 1px solid #e8e8e8;
+            background: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+        }
+
+        .clear-all {
+            margin-left: auto;
+            color: #999;
+            text-decoration: underline;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .clear-all:hover {
+            color: #000;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 6rem 2rem;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            opacity: 0.2;
+        }
+
+        .empty-state h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .shop-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .shop-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .product-card {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            background: #000;
+            border-color: #000;
+        }
+
+        .remove-btn:hover svg {
+            stroke: #fff;
+        }
+
+        .remove-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: #000;
+            stroke-width: 2;
+        }
+
+        .product-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #f5f5f5;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-brand {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+        }
+
+        .product-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* Auth Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 3rem;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        .modal-content h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e8e8e8;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 1rem;
+            background: #000;
+            color: #fff;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .auth-form button:hover {
+            opacity: 0.9;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e8e8e8;
+            background: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+        }
+
+        .social-btn:hover {
+            border-color: #000;
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .toggle-auth a {
+            color: #000;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .toggle-auth a:hover {
+            opacity: 0.7;
+        }
+
+        @media (max-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .wishlist-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .wishlist-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Banner -->
+    <div class="top-bar">
+        CURATED PAKISTANI FASHION • NEW ARRIVALS DAILY
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="logo">VASTR</a>
+
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="#women">WOMEN</a>
+                <a href="#brands">BRANDS</a>
+                <a href="#sale">SALE</a>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <button class="nav-icon" title="Wishlist" onclick="location.href='wishlist.html'">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                <span class="wishlist-count" id="wishlistCount">0</span>
+            </button>
+            <button class="nav-icon" title="Account" id="accountBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">Home</a> / <span>Wishlist</span>
+    </div>
+
+    <!-- Wishlist Container -->
+    <div class="wishlist-container">
+        <div class="wishlist-header">
+            <h1>Wishlist</h1>
+
+            <div class="wishlist-actions" id="wishlistActions" style="display: none;">
+                <button class="filter-btn">Sale</button>
+                <button class="filter-btn">Brands</button>
+                <select class="sort-dropdown">
+                    <option>Last Saved</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                </select>
+                <span class="clear-all" onclick="clearWishlist()">Clear all</span>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <h2>Your wish list is currently empty</h2>
+            <p>Add your favorite products to your wishlist and they'll appear here</p>
+            <a href="products.html" class="shop-btn">Shop sale</a>
+        </div>
+
+        <!-- Product Grid (Hidden by default) -->
+        <div class="product-grid" id="productGrid" style="display: none;"></div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+
+            <div id="loginForm">
+                <h2>The only fashion site you need</h2>
+                <form class="auth-form" onsubmit="handleLogin(event)">
+                    <input type="email" placeholder="Enter your email address to login or register" required>
+                    <button type="submit">Continue</button>
+                </form>
+
+                <div class="auth-divider">OR</div>
+
+                <button class="social-btn" onclick="loginWithGoogle()">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                        <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/>
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <button class="social-btn" onclick="loginWithApple()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                    </svg>
+                    Continue with Apple
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+
+        // Check if user is logged in
+        function isLoggedIn() {
+            return localStorage.getItem('vastr_user') !== null;
+        }
+
+        // Get user data
+        function getUserData() {
+            const userData = localStorage.getItem('vastr_user');
+            return userData ? JSON.parse(userData) : null;
+        }
+
+        // Get wishlist from localStorage
+        function getWishlist() {
+            const wishlist = localStorage.getItem('vastr_wishlist');
+            return wishlist ? JSON.parse(wishlist) : [];
+        }
+
+        // Save wishlist to localStorage
+        function saveWishlist(wishlist) {
+            localStorage.setItem('vastr_wishlist', JSON.stringify(wishlist));
+            updateWishlistCount();
+        }
+
+        // Update wishlist count badge
+        function updateWishlistCount() {
+            const wishlist = getWishlist();
+            const countElement = document.getElementById('wishlistCount');
+            if (countElement) {
+                countElement.textContent = wishlist.length;
+                countElement.style.display = wishlist.length > 0 ? 'block' : 'none';
+            }
+        }
+
+        // Show auth modal
+        function showAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        // Close auth modal
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        // Handle login
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+
+            // Simple mock authentication
+            const userData = {
+                email: email,
+                name: email.split('@')[0],
+                loginTime: new Date().toISOString()
+            };
+
+            localStorage.setItem('vastr_user', JSON.stringify(userData));
+            closeAuthModal();
+            loadWishlist();
+        }
+
+        // Social logins (mock)
+        function loginWithGoogle() {
+            const userData = {
+                email: 'user@gmail.com',
+                name: 'Google User',
+                provider: 'google',
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('vastr_user', JSON.stringify(userData));
+            closeAuthModal();
+            loadWishlist();
+        }
+
+        function loginWithApple() {
+            const userData = {
+                email: 'user@icloud.com',
+                name: 'Apple User',
+                provider: 'apple',
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('vastr_user', JSON.stringify(userData));
+            closeAuthModal();
+            loadWishlist();
+        }
+
+        // Load wishlist
+        async function loadWishlist() {
+            if (!isLoggedIn()) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('productGrid').style.display = 'none';
+                document.getElementById('wishlistActions').style.display = 'none';
+                return;
+            }
+
+            const wishlist = getWishlist();
+
+            if (wishlist.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('productGrid').style.display = 'none';
+                document.getElementById('wishlistActions').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('productGrid').style.display = 'grid';
+            document.getElementById('wishlistActions').style.display = 'flex';
+
+            // Display wishlist items
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = wishlist.map(item => `
+                <div class="product-card">
+                    <button class="remove-btn" onclick="removeFromWishlist('${item.id}')">
+                        <svg viewBox="0 0 24 24">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="product-image" onclick="viewProduct('${item.id}')">
+                        <img src="${item.image}" alt="${item.title}">
+                    </div>
+                    <div class="product-brand">${item.brand}</div>
+                    <div class="product-title">${item.title}</div>
+                    <div class="product-price">${item.price}</div>
+                </div>
+            `).join('');
+        }
+
+        // Remove from wishlist
+        function removeFromWishlist(productId) {
+            let wishlist = getWishlist();
+            wishlist = wishlist.filter(item => item.id !== productId);
+            saveWishlist(wishlist);
+            loadWishlist();
+        }
+
+        // Clear wishlist
+        function clearWishlist() {
+            if (confirm('Are you sure you want to clear your entire wishlist?')) {
+                saveWishlist([]);
+                loadWishlist();
+            }
+        }
+
+        // View product
+        async function viewProduct(productId) {
+            try {
+                const response = await fetch(`${API_BASE}/products/${productId}`);
+                const data = await response.json();
+                if (data.url) {
+                    window.open(data.url, '_blank');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Account button handler
+        document.getElementById('accountBtn').addEventListener('click', () => {
+            if (!isLoggedIn()) {
+                showAuthModal();
+            } else {
+                // Show account menu or logout
+                if (confirm('Do you want to logout?')) {
+                    localStorage.removeItem('vastr_user');
+                    location.reload();
+                }
+            }
+        });
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            updateWishlistCount();
+
+            if (!isLoggedIn()) {
+                showAuthModal();
+            } else {
+                loadWishlist();
+            }
+        });
+
+        // Close modal on outside click
+        document.getElementById('authModal').addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                closeAuthModal();
+            }
+        });
+    </script>
+</body>
+</html>

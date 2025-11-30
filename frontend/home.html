@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <title>Vastr - Shop Pakistani Fashion</title>
     <style>
         * {
@@ -99,6 +100,7 @@
             border-color: #000;
         }
 
+
         .nav-search-icon {
             position: absolute;
             right: 1rem;
@@ -136,6 +138,191 @@
             fill: none;
             stroke-width: 2;
         }
+        /* Search Suggestions Dropdown */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-top: none;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.search-suggestions.active {
+    display: block;
+}
+
+.suggestion-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #f8f8f8;
+}
+
+.suggestion-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.4;
+}
+
+.suggestion-text {
+    font-size: 0.85rem;
+    color: #000;
+}
+/* Wishlist Heart Button */
+.product-heart {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e8e8e8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.product-heart svg {
+    width: 16px;
+    height: 16px;
+    stroke: #000;
+    fill: none;
+    stroke-width: 2;
+    transition: all 0.2s;
+}
+
+.product-heart.active svg {
+    fill: #000;
+}
+
+.product-heart:hover {
+    transform: scale(1.1);
+    background: #fff;
+}
+
+/* Wishlist Count Badge */
+.wishlist-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #000;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.15rem 0.4rem;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    display: none;
+}
+
+/* Auth Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 3rem;
+    max-width: 450px;
+    width: 90%;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-content h2 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #e8e8e8;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.auth-form button {
+    width: 100%;
+    padding: 1rem;
+    background: #000;
+    color: #fff;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #999;
+}
+
+.social-btn {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #e8e8e8;
+    background: #fff;
+    cursor: pointer;
+    margin-bottom: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+}
+
+@keyframes slideUp {
+    from { transform: translate(-50%, 100px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { transform: translate(-50%, 0); opacity: 1; }
+    to { transform: translate(-50%, 100px); opacity: 0; }
+}
 
         /* Hero Search */
         .hero {
@@ -434,6 +621,124 @@
                 gap: 2rem;
             }
         }
+        /* Profile Dropdown */
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-dropdown.active .profile-menu {
+  display: block;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 1002;
+  display: none;
+  overflow: hidden;
+}
+
+.profile-menu-item {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #000;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.profile-menu-item:last-child {
+  border-bottom: none;
+}
+
+.profile-menu-item:hover {
+  background: #f8f8f8;
+}
+
+.profile-menu-item svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.profile-user-info {
+  padding: 1rem;
+  border-bottom: 1px solid #f5f5f8;
+  background: #fafafa;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 0.75rem;
+}
+
+.profile-user-details {
+  flex: 1;
+}
+
+.profile-user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.profile-user-email {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.profile-logout {
+  color: #e74a3b !important;
+}
+
+.profile-logout:hover {
+  background: #fef2f2;
+}
+.nav-icon.profile-dropdown:hover {
+    opacity: 1 !important;
+}
+
+/* User indicator on profile icon */
+.user-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  background: #10b981;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: none;
+}
+
+.user-indicator.active {
+  display: block;
+}
+
+/* Update nav-icon for profile */
+.nav-icon.profile-icon {
+  position: relative;
+}
     </style>
 </head>
 <body>
@@ -456,33 +761,62 @@
             <div class="nav-search">
                 <input type="text" class="nav-search-input" id="navSearchInput"
                        placeholder="Search products, brands...">
-                <svg class="nav-search-icon" onclick="searchProducts()" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-            </div>
+                 <svg class="nav-search-icon" onclick="performSearch()" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <div class="search-suggestions" id="searchSuggestions"></div>
         </div>
 
         <div class="nav-right">
-            <button class="nav-icon" title="Wishlist">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <button class="nav-icon" title="Account">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </button>
+         <button class="nav-icon" title="Wishlist" onclick="handleWishlistClick()">
+    <svg viewBox="0 0 24 24">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+    <span class="wishlist-count">0</span>
+</button>
+         <div class="nav-icon profile-icon profile-dropdown" title="Account" id="profileDropdown">
+    <svg viewBox="0 0 24 24">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+    <div class="user-indicator" id="userIndicator"></div>
+
+    <!-- Profile Dropdown Menu -->
+    <div class="profile-menu" id="profileMenu">
+      <div class="profile-user-info" id="profileUserInfo" style="display: none;">
+        <div style="display: flex; align-items: center;">
+          <div class="profile-avatar" id="profileAvatar"></div>
+          <div class="profile-user-details">
+            <div class="profile-user-name" id="profileUserName"></div>
+            <div class="profile-user-email" id="profileUserEmail"></div>
+          </div>
         </div>
+      </div>
+      <a href="#" class="profile-menu-item" onclick="showAccountSettings(event)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"/></svg>
+        <span>Account Settings</span>
+      </a>
+      <a href="#" class="profile-menu-item profile-logout" onclick="logout(event)">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Log out</span>
+      </a>
+    </div>
+  </div>
+</div>
     </nav>
 
     <!-- Hero -->
     <section class="hero">
-        <h1>Shop fashion from 3,000+ products across Pakistan's top brands</h1>
+        <h1>Shop fashion from 9,000+ products across Pakistan's top brands</h1>
     </section>
 
+<!-- Categories Section - ADD THIS -->
+<section class="categories">
+  <div class="category-scroll" id="categoryScroll">
+    <div class="loading">Loading categories...</div>
+  </div>
+</section>
 
     <!-- Featured Products -->
 <div class="section-header">
@@ -545,41 +879,6 @@
     @media (max-width: 1024px) { .brands-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 768px) { .brands-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
 </style>
-
-<script>
-    async function loadBrandsWithLogos() {
-        try {
-            const res = await fetch('http://localhost:8000/api/v1/brands');
-            const data = await res.json();
-
-            const topBrands = data.brands
-                .sort((a, b) => b.product_count - a.product_count)
-                .slice(0, 12);
-
-            document.getElementById('brandsGrid').innerHTML = topBrands.map(b => {
-                const logoPng = `logos/${b.brand_id}.png`;
-                const logoWebp = `logos/${b.brand_id}.webp`;
-                const placeholder = `https://via.placeholder.com/300x120/ffffff/999999?text=${b.brand_name.split(' ').map(w=>w[0]).join('')}`;
-
-                return `
-                    <div class="brand-card" onclick="location.href='products.html?brand=${encodeURIComponent(b.brand_name)}'">
-                        <img src="${logoPng}"
-                             alt="${b.brand_name}"
-                             class="brand-logo"
-                             onerror="this.onerror=null; this.src='${logoWebp}'; this.onerror=function(){this.src='${placeholder}'}">
-                        <div class="brand-name">${b.brand_name}</div>
-                        <div class="brand-count">${b.product_count.toLocaleString()} items</div>
-                    </div>
-                `;
-            }).join('');
-        } catch (err) {
-            document.getElementById('brandsGrid').innerHTML = '<p style="text-align:center; color:#999; grid-column: 1/-1;">Failed to load brands</p>';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadBrandsWithLogos);
-</script>
-
 
     <!-- Footer -->
     <footer>
@@ -658,9 +957,25 @@
             document.getElementById('brandsGrid').innerHTML = '<p style="text-align:center; color:#999;">Brands failed to load</p>';
         }
     }
+document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Load everything in parallel for better performance
+                await Promise.all([
+                    loadProducts(),
+                    loadBrandsWithLogos(),
+                    loadCategories()
+                ]);
 
-    // Call it when page loads
-    document.addEventListener('DOMContentLoaded', loadBrandsWithLogos);
+                // Initialize UI after data loads
+                updateProfileUI();
+                updateWishlistCount();
+
+                console.log('✅ Vastr initialized successfully!');
+            } catch (error) {
+                console.error('❌ Initialization failed:', error);
+            }
+        });
+
 
         // ==================== LOAD CATEGORIES ====================
         async function loadCategories() {
@@ -688,6 +1003,7 @@
         }
 
        // ==================== LOAD PRODUCTS (UPDATED WITH IMAGE PROXY) ====================
+        // Find this section in index.html (around line 450-480)
 async function loadProducts() {
   try {
     const response = await fetch(`${API_BASE}/products?limit=24`);
@@ -696,7 +1012,6 @@ async function loadProducts() {
 
     if (data.products && data.products.length > 0) {
       grid.innerHTML = data.products.map(p => {
-        // Extract raw image URL safely
         let rawImageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999999?text=No+Image';
 
         if (p.images && p.images.length > 0) {
@@ -709,7 +1024,6 @@ async function loadProducts() {
           }
         }
 
-        // Use images.weserv.nl proxy to bypass CORS + hotlinking block
         const proxyUrl = rawImageUrl.includes('placeholder')
           ? rawImageUrl
           : `https://images.weserv.nl/?url=${encodeURIComponent(rawImageUrl)}&w=600&h=800&fit=cover&output=webp&q=85`;
@@ -718,9 +1032,23 @@ async function loadProducts() {
           ? `PKR ${p.price_min.toLocaleString()}`
           : 'Price on request';
 
+        // ADD HEART BUTTON HERE
         return `
-          <div class="product-card" onclick="viewProduct('${p.product_id}')">
-            <div class="product-image">
+          <div class="product-card" style="position: relative;">
+            <button class="product-heart"
+                    data-product-id="${p.product_id}"
+                    onclick="event.stopPropagation(); toggleWishlist({
+                        id: '${p.product_id}',
+                        title: \`${p.title.replace(/`/g, '')}\`,
+                        brand: '${p.brand_name || 'Brand'}',
+                        price: '${priceDisplay}',
+                        image: '${proxyUrl}'
+                    })">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <div class="product-image" onclick="viewProduct('${p.product_id}')">
               <img src="${proxyUrl}"
                    alt="${p.title}"
                    loading="lazy"
@@ -733,58 +1061,16 @@ async function loadProducts() {
           </div>
         `;
       }).join('');
-    } else {
-      grid.innerHTML = '<div class="loading">No products available</div>';
+
+      // Update heart icons after rendering
+      updateHeartIcons();
     }
   } catch (error) {
     console.error('Products error:', error);
-    document.getElementById('productGrid').innerHTML =
-      '<div class="error-message">Unable to load products. Is your backend running?</div>';
   }
 }
 
 
-
-        // ==================== SEARCH FUNCTIONALITY ====================
-        async function performSearch() {
-            const query = document.getElementById('navSearchInput').value.trim();
-            if (query) {
-                // Redirect to products page with search query
-                window.location.href = `products.html?search=${encodeURIComponent(query)}`;
-            }
-        }
-
-        // Search suggestions with debouncing
-        const loadSearchSuggestions = debounce(async function(query) {
-            if (query.length < 2) {
-                document.getElementById('searchSuggestions').classList.remove('active');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
-                const data = await response.json();
-
-                const suggestionsDiv = document.getElementById('searchSuggestions');
-
-                if (data.suggestions && data.suggestions.length > 0) {
-                    suggestionsDiv.innerHTML = data.suggestions.map(s => `
-                        <div class="suggestion-item" onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')">${s}</div>
-                    `).join('');
-                    suggestionsDiv.classList.add('active');
-                } else {
-                    suggestionsDiv.classList.remove('active');
-                }
-            } catch (error) {
-                console.error('Suggestions error:', error);
-            }
-        }, 300);
-
-        function selectSuggestion(suggestion) {
-            document.getElementById('navSearchInput').value = suggestion;
-            document.getElementById('searchSuggestions').classList.remove('active');
-            performSearch();
-        }
 
         // ==================== NAVIGATION FUNCTIONS ====================
         function filterByCategory(category) {
@@ -799,9 +1085,23 @@ async function loadProducts() {
             window.location.href = `products.html?gender=${encodeURIComponent(gender)}`;
         }
 
-        function viewProduct(productId) {
-            window.location.href = `product-detail.html?id=${encodeURIComponent(productId)}`;
+       async function viewProduct(productId) {
+    try {
+        // Fetch the product details to get the URL
+        const response = await fetch(`${API_BASE}/products/${productId}`);
+        const data = await response.json();
+
+        if (data.url) {
+            // Redirect to the original brand website
+            window.open(data.url, '_blank');
+        } else {
+            alert('Product URL not available');
         }
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        alert('Could not open product page');
+    }
+}
 
         function viewAllProducts() {
             window.location.href = 'products.html';
@@ -834,6 +1134,441 @@ async function loadProducts() {
     loadProducts();  // Load products directly
     loadBrands();
 });
+
+let searchTimeout;
+
+// ==================== SEARCH FUNCTIONALITY (NEW) ====================
+async function loadSearchSuggestions(query) {
+    if (!query || query.length < 2) {
+        document.getElementById('searchSuggestions').classList.remove('active');
+        return;
+    }
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
+            const data = await response.json();
+
+            const suggestionsDiv = document.getElementById('searchSuggestions');
+
+            if (data.suggestions && data.suggestions.length > 0) {
+                suggestionsDiv.innerHTML = data.suggestions.map(suggestion => `
+                    <div class="suggestion-item" onclick="selectSuggestion('${suggestion.replace(/'/g, "\\'")}')">
+                        <svg class="suggestion-icon" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="2"></circle>
+                            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"></path>
+                        </svg>
+                        <span class="suggestion-text">${suggestion}</span>
+                    </div>
+                `).join('');
+                suggestionsDiv.classList.add('active');
+            } else {
+                suggestionsDiv.classList.remove('active');
+            }
+        } catch (error) {
+            console.error('Suggestions error:', error);
+        }
+    }, 300);
+}
+
+function selectSuggestion(suggestion) {
+    document.getElementById('navSearchInput').value = suggestion;
+    document.getElementById('searchSuggestions').classList.remove('active');
+    performSearch();
+}
+
+// CHANGE THIS FUNCTION:
+function performSearch() {
+    const query = document.getElementById('navSearchInput').value.trim();
+    if (query) {
+        window.location.href = `products.html?q=${encodeURIComponent(query)}`;
+    }
+}
+            // ==================== WISHLIST FUNCTIONALITY ====================
+// Handle wishlist icon click
+function handleWishlistClick() {
+    if (!isLoggedIn()) {
+        showAuthModal();
+        // After login, redirect to wishlist
+        localStorage.setItem('redirect_after_login', 'wishlist.html');
+    } else {
+        window.location.href = 'wishlist.html';
+    }
+}
+function isLoggedIn() {
+    return localStorage.getItem('vastr_user') !== null;
+}
+
+function getWishlist() {
+    const wishlist = localStorage.getItem('vastr_wishlist');
+    return wishlist ? JSON.parse(wishlist) : [];
+}
+
+function saveWishlist(wishlist) {
+    localStorage.setItem('vastr_wishlist', JSON.stringify(wishlist));
+    updateWishlistCount();
+}
+
+function isInWishlist(productId) {
+    const wishlist = getWishlist();
+    return wishlist.some(item => item.id === productId);
+}
+
+function toggleWishlist(product) {
+    if (!isLoggedIn()) {
+        showAuthModal();
+        return;
+    }
+
+    let wishlist = getWishlist();
+
+    if (isInWishlist(product.id)) {
+        wishlist = wishlist.filter(item => item.id !== product.id);
+        saveWishlist(wishlist);
+        showNotification('Removed from wishlist');
+    } else {
+        wishlist.push(product);
+        saveWishlist(wishlist);
+        showNotification('Added to wishlist!');
+    }
+
+    updateHeartIcons();
+}
+
+function updateWishlistCount() {
+    const wishlist = getWishlist();
+    const countElements = document.querySelectorAll('.wishlist-count');
+    countElements.forEach(el => {
+        el.textContent = wishlist.length;
+        el.style.display = wishlist.length > 0 ? 'block' : 'none';
+    });
+}
+
+function updateHeartIcons() {
+    document.querySelectorAll('.product-heart').forEach(heart => {
+        const productId = heart.getAttribute('data-product-id');
+        if (isInWishlist(productId)) {
+            heart.classList.add('active');
+        } else {
+            heart.classList.remove('active');
+        }
+    });
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #000;
+        color: #fff;
+        padding: 1rem 2rem;
+        border-radius: 4px;
+        z-index: 10000;
+        font-size: 0.9rem;
+        animation: slideUp 0.3s ease;
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'slideDown 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 2000);
+}
+
+function showAuthModal() {
+    if (!document.getElementById('authModal')) {
+        createAuthModal();
+    }
+    document.getElementById('authModal').classList.add('active');
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (modal) modal.classList.remove('active');
+}
+// Handle Google Sign-In response
+function handleGoogleResponse(response) {
+    try {
+        // Decode JWT token to get user info
+        const userInfo = parseJwt(response.credential);
+
+        const userData = {
+            email: userInfo.email,
+            name: userInfo.name,
+            picture: userInfo.picture,
+            provider: 'google',
+            loginTime: new Date().toISOString()
+        };
+
+        localStorage.setItem('vastr_user', JSON.stringify(userData));
+        closeAuthModal();
+        showNotification(`Welcome, ${userInfo.name}!`);
+        updateProfileUI();
+
+        const redirect = localStorage.getItem('redirect_after_login');
+        if (redirect === 'profile') {
+            localStorage.removeItem('redirect_after_login');
+            setTimeout(() => toggleProfileDropdown(), 100);
+        } else if (redirect) {
+            localStorage.removeItem('redirect_after_login');
+            window.location.href = redirect;
+        }
+    } catch (error) {
+        console.error('Google login error:', error);
+        showNotification('Login failed. Please try again.');
+    }
+}
+
+// Decode JWT token
+function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')
+    );
+    return JSON.parse(jsonPayload);
+}
+function createAuthModal() {
+    const modalHTML = `
+        <div class="modal" id="authModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+                <h2>Welcome to Vastr</h2>
+                <p style="color: #666; margin-bottom: 2rem; font-size: 0.95rem;">Sign in to save your wishlist and track orders</p>
+
+                <form class="auth-form" onsubmit="handleLogin(event)">
+                    <input type="email" placeholder="Enter your email address" required>
+                    <button type="submit">Continue with Email</button>
+                </form>
+
+                <div class="auth-divider">OR</div>
+
+                <button class="social-btn" onclick="loginWithGoogle()">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                        <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/>
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    document.getElementById('authModal').addEventListener('click', (e) => {
+        if (e.target.id === 'authModal') closeAuthModal();
+    });
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    const email = event.target.querySelector('input[type="email"]').value;
+
+    const userData = {
+        email: email,
+        name: email.split('@')[0],
+        provider: 'email',
+        loginTime: new Date().toISOString()
+    };
+
+    localStorage.setItem('vastr_user', JSON.stringify(userData));
+    closeAuthModal();
+    showNotification('Welcome back!');
+    updateProfileUI();
+
+    // Handle redirect
+    const redirect = localStorage.getItem('redirect_after_login');
+    if (redirect === 'profile') {
+        localStorage.removeItem('redirect_after_login');
+        setTimeout(() => toggleProfileDropdown(), 100);
+    } else if (redirect) {
+        localStorage.removeItem('redirect_after_login');
+        window.location.href = redirect;
+    }
+}
+
+function loginWithGoogle() {
+    // For demo purposes, prompt user for their info
+    const email = prompt('Enter your Google email:');
+
+    if (!email) {
+        showNotification('Login cancelled');
+        return;
+    }
+
+    const name = prompt('Enter your name:') || email.split('@')[0];
+
+    const userData = {
+        email: email,
+        name: name,
+        provider: 'google',
+        loginTime: new Date().toISOString()
+    };
+
+    localStorage.setItem('vastr_user', JSON.stringify(userData));
+    closeAuthModal();
+    showNotification(`Welcome, ${name}!`);
+    updateProfileUI();
+
+    const redirect = localStorage.getItem('redirect_after_login');
+    if (redirect === 'profile') {
+        localStorage.removeItem('redirect_after_login');
+        setTimeout(() => toggleProfileDropdown(), 100);
+    } else if (redirect) {
+        localStorage.removeItem('redirect_after_login');
+        window.location.href = redirect;
+    }
+}
+
+            // ==================== PROFILE FUNCTIONALITY ====================
+
+// Update profile UI based on login status
+function updateProfileUI() {
+  const isLoggedInUser = isLoggedIn();
+  const profileDropdown = document.getElementById('profileDropdown');
+  const userIndicator = document.getElementById('userIndicator');
+  const profileMenu = document.getElementById('profileMenu');
+  const profileUserInfo = document.getElementById('profileUserInfo');
+
+  if (isLoggedInUser) {
+    // Show logged in state
+    userIndicator.classList.add('active');
+    profileUserInfo.style.display = 'block';
+    updateProfileUserInfo();
+  } else {
+    // Show logged out state
+    userIndicator.classList.remove('active');
+    profileUserInfo.style.display = 'none';
+  }
+
+  updateWishlistCount(); // Also update wishlist count
+}
+
+// Update user info in profile dropdown
+function updateProfileUserInfo() {
+  const user = getUserData();
+  if (user) {
+    document.getElementById('profileUserName').textContent = user.name || 'User';
+    document.getElementById('profileUserEmail').textContent = user.email;
+
+    // Update avatar with initials
+    const initials = (user.name || user.email.split('@')[0])
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+    document.getElementById('profileAvatar').textContent = initials;
+  }
+}
+
+// Profile dropdown toggle
+function toggleProfileDropdown() {
+  const profileDropdown = document.getElementById('profileDropdown');
+  const isActive = profileDropdown.classList.contains('active');
+
+  // Close all other dropdowns
+  document.querySelectorAll('.profile-dropdown').forEach(dd => {
+    dd.classList.remove('active');
+  });
+
+  if (!isActive) {
+    profileDropdown.classList.add('active');
+  }
+}
+
+// Close profile dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const profileDropdown = document.getElementById('profileDropdown');
+  if (!e.target.closest('.profile-dropdown')) {
+    profileDropdown.classList.remove('active');
+  }
+});
+
+// Profile button click handler
+document.getElementById('profileDropdown').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (isLoggedIn()) {
+    toggleProfileDropdown();
+  } else {
+    handleProfileClick();
+  }
+});
+
+// Handle profile icon click
+function handleProfileClick() {
+  if (!isLoggedIn()) {
+    showAuthModal();
+    // Set redirect to show profile after login
+    localStorage.setItem('redirect_after_login', 'profile');
+  } else {
+    toggleProfileDropdown();
+  }
+}
+
+function showAccountSettings(event) {
+  event.preventDefault();
+  showNotification('Account settings coming soon!');
+  document.getElementById('profileDropdown').classList.remove('active');
+}
+
+// Placeholder functions for profile menu items
+function showOrders(event) {
+  event.preventDefault();
+  showNotification('Orders feature coming soon!');
+  document.getElementById('profileDropdown').classList.remove('active');
+}
+
+function logout(event) {
+  event.preventDefault();
+  if (confirm('Are you sure you want to log out?')) {
+    localStorage.removeItem('vastr_user');
+    showNotification('Logged out successfully');
+    updateProfileUI();
+    document.getElementById('profileDropdown').classList.remove('active');
+  }
+  }
+
+// Get user data function
+function getUserData() {
+  const userData = localStorage.getItem('vastr_user');
+  return userData ? JSON.parse(userData) : null;
+}
+
+// Update handleWishlistClick to use updated UI
+// Make sure this is updated in handleWishlistClick
+function handleWishlistClick() {
+  if (!isLoggedIn()) {
+    showAuthModal();
+    localStorage.setItem('redirect_after_login', 'wishlist.html');
+  } else {
+    window.location.href = 'wishlist.html';
+  }
+}
+// Add these functions to your script section
+async function loadBrands() {
+    loadBrandsWithLogos(); // Use the existing function
+}
+
+// Fix the DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', () => {
+    loadProducts();
+    loadBrandsWithLogos();  // ✅ Fixed
+    loadCategories();       // ✅ Add this
+    updateProfileUI();      // ✅ Add this
+    updateWishlistCount();  // ✅ Add this
+});
+
     </script>
+
 </body>
 </html>

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from routers import brands, general, products
+from routers import brands, general, products,search
 from database import test_connection
 
 @asynccontextmanager
@@ -39,3 +39,4 @@ app.add_middleware(
 app.include_router(brands.router)
 app.include_router(general.router)
 app.include_router(products.router)
+app.include_router(search.router)
