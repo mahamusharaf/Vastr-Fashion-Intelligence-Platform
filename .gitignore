@@ -1,2 +1,4 @@
 # Ignore image cache (large model files)
 backend/image_cache/
+**/__pycache__/
+*.pyc
