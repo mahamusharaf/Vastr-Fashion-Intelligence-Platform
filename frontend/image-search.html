@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search by Image - VASTR</title>
+
+<style>
+/* ========== GENERAL RESET & BODY ========== */
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background:#fff; color:#000; line-height:1.5;
+}
+
+/* ========== NAVIGATION HEADER ========== */
+nav {
+    background: #fff;
+    padding: 1rem 5%;
+    border-bottom: 1px solid #e8e8e8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    gap: 2rem;
+}
+
+.logo { font-size:1.8rem; font-weight:700; color:#000; text-decoration:none; letter-spacing:-1px; white-space:nowrap; }
+.nav-center { display:flex; gap:2rem; align-items:center; flex:1; }
+.nav-links { display:flex; gap:2rem; white-space:nowrap; }
+.nav-links a { text-decoration:none; color:#000; font-size:0.85rem; font-weight:500; transition:opacity 0.2s; }
+.nav-links a:hover { opacity:0.6; }
+.nav-search { flex:1; max-width:400px; position:relative; }
+.nav-search-input {
+    width:100%; padding:0.6rem 2.5rem 0.6rem 1rem; border:1px solid #e8e8e8; background:#f8f8f8; font-size:0.85rem;
+    font-family:inherit; transition:all 0.2s;
+}
+.nav-search-input:focus { outline:none; background:#fff; border-color:#000; }
+.nav-search-icon { position:absolute; right:1rem; top:50%; transform:translateY(-50%); width:16px; height:16px; cursor:pointer; }
+.nav-right { display:flex; gap:1.5rem; align-items:center; }
+.nav-icon { cursor:pointer; width:20px; height:20px; background:none; border:none; padding:0; transition:opacity 0.2s; }
+.nav-icon svg { width:100%; height:100%; stroke:#000; fill:none; stroke-width:2; }
+.nav-icon:hover { opacity:0.6; }
+
+/* Profile dropdown */
+.profile-dropdown { position:relative; }
+.profile-dropdown.active .profile-menu { display:block; }
+.profile-menu {
+  position:absolute; top:100%; right:0; background:#fff; border:1px solid #e8e8e8; border-radius:8px;
+  min-width:200px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:1002; display:none; overflow:hidden;
+}
+.profile-menu-item { padding:0.75rem 1rem; display:flex; align-items:center; gap:0.75rem; color:#000; text-decoration:none; font-size:0.9rem; transition:background 0.2s; border-bottom:1px solid #f5f5f5; }
+.profile-menu-item:last-child { border-bottom:none; }
+.profile-menu-item:hover { background:#f8f8f8; }
+.profile-menu-item svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; }
+.profile-user-info { padding:1rem; border-bottom:1px solid #f5f5f8; background:#fafafa; display:none; }
+.profile-avatar { width:40px; height:40px; border-radius:50%; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:600; margin-right:0.75rem; }
+.profile-user-details { flex:1; }
+.profile-user-name { font-weight:600; font-size:0.9rem; margin-bottom:0.25rem; }
+.profile-user-email { font-size:0.8rem; color:#666; }
+.profile-logout { color:#e74a3b !important; }
+.profile-logout:hover { background:#fef2f2; }
+.nav-icon.profile-dropdown:hover { opacity:1 !important; }
+.user-indicator { position:absolute; top:-4px; right:-4px; width:12px; height:12px; background:#10b981; border:2px solid #fff; border-radius:50%; display:none; }
+.user-indicator.active { display:block; }
+
+/* Search suggestions */
+.search-suggestions { position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid #e8e8e8; border-top:none; max-height:300px; overflow-y:auto; display:none; z-index:1001; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+.search-suggestions.active { display:block; }
+.suggestion-item { padding:0.75rem 1rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; border-bottom:1px solid #f5f5f5; transition:background 0.2s; }
+.suggestion-item:hover { background:#f8f8f8; }
+.suggestion-icon { width:16px; height:16px; opacity:0.4; }
+.suggestion-text { font-size:0.85rem; color:#000; }
+
+/* ========== HERO & UPLOAD ========== */
+.hero { text-align:center; padding:4rem 2rem; }
+.hero h1 { font-size:2rem; margin-bottom:0.5rem; font-weight:600; }
+.hero p { font-size:1rem; color:#555; max-width:600px; margin:0 auto; }
+
+.upload-box {
+    max-width:500px; margin:2rem auto; padding:3rem;
+    border:2px dashed #ccc; border-radius:15px; background:#fff;
+    text-align:center; cursor:pointer; transition:all .3s; box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+.upload-box:hover, .upload-box.dragover { border-color:#000; background:#f0f0f0; }
+.upload-icon { width:60px; height:60px; margin-bottom:1rem; opacity:0.6; }
+.upload-box h2 { font-size:1.3rem; margin-bottom:0.3rem; }
+.upload-box p { color:#666; font-size:0.9rem; }
+.btn-choose { background:#000; color:#fff; border:none; padding:0.8rem 2rem; border-radius:8px; font-size:0.9rem; margin-top:1rem; cursor:pointer; }
+
+.preview { display:none; max-width:500px; margin:2rem auto; padding:0; text-align:center; }
+.preview.active { display:block; }
+.preview img { max-width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.1); }
+
+.actions { margin-top:1rem; display:flex; justify-content:center; gap:1rem; }
+.actions button { flex:1; padding:0.8rem; border:none; border-radius:8px; cursor:pointer; font-size:0.9rem; transition:0.3s; }
+.btn-search { background:#000; color:#fff; }
+.btn-again { background:#666; color:#fff; }
+
+.spinner { border:3px solid #f0f0f0; border-top:3px solid #000; border-radius:50%; width:16px; height:16px; animation:spin 1s linear infinite; display:inline-block; margin-right:5px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.results { max-width:900px; margin:3rem auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1.5rem; }
+.product-card { border:1px solid #eee; border-radius:12px; padding:1rem; text-align:center; background:#fff; transition:0.3s; }
+.product-card:hover { box-shadow:0 8px 20px rgba(0,0,0,0.08); }
+.product-card img { max-width:100%; border-radius:8px; }
+.product-title { font-size:0.9rem; margin:0.5rem 0; font-weight:500; }
+.product-price { color:#000; font-weight:600; margin-bottom:0.5rem; }
+.product-link { text-decoration:none; color:#fff; background:#000; padding:0.4rem 0.8rem; border-radius:6px; display:inline-block; font-size:0.8rem; }
+.main-label { font-weight:600; margin-bottom:0.3rem; font-size:0.8rem; }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER NAV ===== -->
+<nav>
+    <a href="#" class="logo">VASTR</a>
+    <div class="nav-center">
+        <div class="nav-links">
+            <a href="#women">WOMEN</a>
+            <a href="#brands">BRANDS</a>
+            <a href="#sale">SALE</a>
+        </div>
+        <div class="nav-search">
+            <input type="text" class="nav-search-input" id="navSearchInput" placeholder="Search products, brands...">
+            <svg class="nav-search-icon" onclick="performSearch()" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+    </div>
+    <div class="nav-right">
+        <button class="nav-icon" title="Wishlist" onclick="handleWishlistClick()">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+
+        </button>
+        <div class="nav-icon profile-icon profile-dropdown" title="Account" id="profileDropdown">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <div class="user-indicator" id="userIndicator"></div>
+            <div class="profile-menu" id="profileMenu">
+                <div class="profile-user-info" id="profileUserInfo">
+                    <div style="display:flex;align-items:center;">
+                        <div class="profile-avatar" id="profileAvatar"></div>
+                        <div class="profile-user-details">
+                            <div class="profile-user-name" id="profileUserName"></div>
+                            <div class="profile-user-email" id="profileUserEmail"></div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="profile-menu-item" onclick="showAccountSettings(event)">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"/></svg>
+                    <span>Account Settings</span>
+                </a>
+                <a href="#" class="profile-menu-item profile-logout" onclick="logout(event)">
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Log out</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+    <h1>Find Similar Outfits Instantly</h1>
+    <p>Upload a photo of any outfit — we’ll show you the most similar product plus other options from top Pakistani brands.</p>
+</div>
+
+<!-- ===== UPLOAD BOX ===== -->
+<div class="upload-box" id="uploadBox">
+    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    <h2>Drag & drop your image</h2>
+    <p>or click to browse • JPG, PNG, up to 10MB</p>
+    <button class="btn-choose">Choose Image</button>
+    <input type="file" id="fileInput" accept="image/*" style="display:none">
+</div>
+
+<!-- ===== PREVIEW ===== -->
+<div class="preview" id="preview">
+    <img id="previewImg" src="" alt="Uploaded Image">
+    <div class="actions">
+        <button class="btn-search" id="searchBtn"><span id="btnText">Search Similar Products</span></button>
+        <button class="btn-again" onclick="resetAll()">Upload Another Image</button>
+    </div>
+</div>
+
+<!-- ===== RESULTS ===== -->
+<div class="results" id="results"></div>
+
+<script>
+const uploadBox = document.getElementById('uploadBox');
+const fileInput = document.getElementById('fileInput');
+const preview = document.getElementById('preview');
+const previewImg = document.getElementById('previewImg');
+const resultsDiv = document.getElementById('results');
+let file = null;
+
+uploadBox.onclick = () => fileInput.click();
+fileInput.onchange = e => { if(e.target.files[0]) loadImage(e.target.files[0]); }
+
+['dragenter','dragover'].forEach(ev => uploadBox.addEventListener(ev,e=>{ e.preventDefault(); e.stopPropagation(); uploadBox.classList.add('dragover'); }));
+['dragleave','drop'].forEach(ev => uploadBox.addEventListener(ev,e=>{ e.preventDefault(); e.stopPropagation(); uploadBox.classList.remove('dragover'); }));
+uploadBox.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if(f && f.type.startsWith('image/')) loadImage(f); });
+
+function loadImage(f){
+    file=f;
+    const reader=new FileReader();
+    reader.onload=e=>{ previewImg.src=e.target.result; preview.classList.add('active'); uploadBox.style.display='none'; window.scrollTo({top: preview.offsetTop-100, behavior:'smooth'}); }
+    reader.readAsDataURL(f);
+}
+
+document.getElementById('searchBtn').onclick=async()=>{
+    if(!file) return alert("Please upload an image first.");
+    const btn=document.getElementById('searchBtn'), txt=document.getElementById('btnText');
+    btn.disabled=true; txt.innerHTML='<div class="spinner"></div> Searching...';
+    try {
+        const b64=await new Promise((resolve,reject)=>{
+            const r=new FileReader();
+            r.onload=()=>resolve(r.result.split(',')[1]);
+            r.onerror=err=>reject(err);
+            r.readAsDataURL(file);
+        });
+        const res=await fetch('http://localhost:8000/api/v1/search/image',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({image:b64, limit:10})});
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data=await res.json();
+        displayResults(data.results||data);
+    } catch(err){ alert('Backend error or offline. Check console.'); console.error(err); }
+    finally{ btn.disabled=false; txt.textContent='Search Similar Products'; }
+};
+
+function displayResults(products){
+    resultsDiv.innerHTML='';
+    if(!products || products.length===0){ resultsDiv.innerHTML='<p>No similar products found.</p>'; return; }
+    const main=products[0];
+    const mainCard=document.createElement('div'); mainCard.className='product-card';
+    mainCard.innerHTML=`<p class="main-label">Most Similar</p><img src="${main.image||'placeholder.jpg'}"><p class="product-title">${main.name}</p><p class="product-price">PKR ${main.price}</p><a href="${main.link}" target="_blank" class="product-link">View Product</a>`;
+    resultsDiv.appendChild(mainCard);
+    for(let i=1;i<products.length;i++){ const p=products[i]; const card=document.createElement('div'); card.className='product-card';
+        card.innerHTML=`<p class="main-label">Other Options</p><img src="${p.image||'placeholder.jpg'}"><p class="product-title">${p.name}</p><p class="product-price">PKR ${p.price}</p><a href="${p.link}" target="_blank" class="product-link">View Product</a>`; resultsDiv.appendChild(card);
+    }
+}
+
+function resetAll(){ file=null; preview.classList.remove('active'); uploadBox.style.display='block'; resultsDiv.innerHTML=''; }
+</script>
+
+</body>
+</html>

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <title>Products - Vastr</title>
     <style>
         * {
@@ -602,6 +603,124 @@
     from { transform: translate(-50%, 0); opacity: 1; }
     to { transform: translate(-50%, 100px); opacity: 0; }
 }
+          /* Profile Dropdown */
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-dropdown.active .profile-menu {
+  display: block;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 1002;
+  display: none;
+  overflow: hidden;
+}
+
+.profile-menu-item {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #000;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.profile-menu-item:last-child {
+  border-bottom: none;
+}
+
+.profile-menu-item:hover {
+  background: #f8f8f8;
+}
+
+.profile-menu-item svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+.profile-user-info {
+  padding: 1rem;
+  border-bottom: 1px solid #f5f5f8;
+  background: #fafafa;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 0.75rem;
+}
+
+.profile-user-details {
+  flex: 1;
+}
+
+.profile-user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.profile-user-email {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.profile-logout {
+  color: #e74a3b !important;
+}
+
+.profile-logout:hover {
+  background: #fef2f2;
+}
+.nav-icon.profile-dropdown:hover {
+    opacity: 1 !important;
+}
+
+/* User indicator on profile icon */
+.user-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  background: #10b981;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: none;
+}
+
+.user-indicator.active {
+  display: block;
+}
+
+/* Update nav-icon for profile */
+.nav-icon.profile-icon {
+  position: relative;
+}
     </style>
 </head>
 <body>
@@ -612,7 +731,7 @@
 
     <!-- Navigation -->
     <nav>
-        <a href="index.html" class="logo">VASTR</a>
+        <a href="home.html" class="logo">VASTR</a>
 
         <div class="nav-center">
             <div class="nav-links">
@@ -638,18 +757,40 @@
     </svg>
     <span class="wishlist-count">0</span>
 </button>
-            <button class="nav-icon" title="Account">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </button>
+             <div class="nav-icon profile-icon profile-dropdown" title="Account" id="profileDropdown">
+    <svg viewBox="0 0 24 24">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+    <div class="user-indicator" id="userIndicator"></div>
+
+    <!-- Profile Dropdown Menu -->
+    <div class="profile-menu" id="profileMenu">
+      <div class="profile-user-info" id="profileUserInfo" style="display: none;">
+        <div style="display: flex; align-items: center;">
+          <div class="profile-avatar" id="profileAvatar"></div>
+          <div class="profile-user-details">
+            <div class="profile-user-name" id="profileUserName"></div>
+            <div class="profile-user-email" id="profileUserEmail"></div>
+          </div>
         </div>
+      </div>
+      <a href="#" class="profile-menu-item" onclick="showAccountSettings(event)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"/></svg>
+        <span>Account Settings</span>
+      </a>
+      <a href="#" class="profile-menu-item profile-logout" onclick="logout(event)">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Log out</span>
+      </a>
+    </div>
+  </div>
+</div>
     </nav>
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-        <a href="index.html">Home</a> / <span id="breadcrumbText">All Products</span>
+        <a href="home.html">Home</a> / <span id="breadcrumbText">All Products</span>
     </div>
 
     <!-- Main Content -->
@@ -840,9 +981,9 @@ async function loadSearchResults(query) {
 
         const params = new URLSearchParams({
             q: query,
-            limit: productsPerPage
-        });
+            limit: 50
 
+        });
         // Add any active filters to search
         if (currentFilters.brand.length > 0) {
             params.append('brand', currentFilters.brand[0]);
@@ -1197,33 +1338,245 @@ function closeAuthModal() {
     const modal = document.getElementById('authModal');
     if (modal) modal.classList.remove('active');
 }
+// ==================== AUTHENTICATION FUNCTIONALITY ====================
+
+// Check if user is logged in
+function isLoggedIn() {
+    return localStorage.getItem('vastr_user') !== null;
+}
+
+// Get user data
+function getUserData() {
+    const userData = localStorage.getItem('vastr_user');
+    return userData ? JSON.parse(userData) : null;
+}
+
+// Check if this is user's first login
+function isFirstTimeLogin(email) {
+    const loginHistory = localStorage.getItem('vastr_login_history');
+    if (!loginHistory) {
+        return true;
+    }
+    const history = JSON.parse(loginHistory);
+    return !history.includes(email);
+}
+
+// Mark user as having logged in before
+function markUserLogin(email) {
+    const loginHistory = localStorage.getItem('vastr_login_history');
+    let history = loginHistory ? JSON.parse(loginHistory) : [];
+    if (!history.includes(email)) {
+        history.push(email);
+        localStorage.setItem('vastr_login_history', JSON.stringify(history));
+    }
+}
+
+// Handle Google Sign-In response
+async function handleGoogleResponse(response) {
+    try {
+        const userInfo = parseJwt(response.credential);
+        const isFirstTime = isFirstTimeLogin(userInfo.email);
+
+        const userData = {
+            email: userInfo.email,
+            name: userInfo.name,
+            picture: userInfo.picture,
+            provider: 'google',
+            loginTime: new Date().toISOString(),
+            isFirstLogin: isFirstTime
+        };
+
+        localStorage.setItem('vastr_user', JSON.stringify(userData));
+
+        // Send welcome email only for first-time users
+        if (isFirstTime) {
+            try {
+                console.log('📧 Sending welcome email to first-time user...');
+                const emailResponse = await fetch(`${API_BASE}/auth/welcome-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: userInfo.email,
+                        name: userInfo.name,
+                        website_url: window.location.origin
+                    })
+                });
+
+                const emailData = await emailResponse.json();
+
+                if (emailResponse.ok) {
+                    console.log('✅ Welcome email sent successfully!');
+                    showNotification(`Welcome, ${userInfo.name}! Check your email for a special message.`);
+                } else {
+                    console.warn('⚠️ Email sending failed:', emailData);
+                    showNotification(`Welcome, ${userInfo.name}!`);
+                }
+            } catch (emailError) {
+                console.error('❌ Email API error:', emailError);
+                // Don't fail the login if email fails
+                showNotification(`Welcome, ${userInfo.name}!`);
+            }
+
+            // Mark this user as having logged in
+            markUserLogin(userInfo.email);
+        } else {
+            console.log('👋 Returning user - no welcome email needed');
+            showNotification(`Welcome back, ${userInfo.name}!`);
+        }
+
+        closeAuthModal();
+        updateProfileUI();
+        updateWishlistCount();
+
+        // Handle redirects
+        const redirect = localStorage.getItem('redirect_after_login');
+        if (redirect) {
+            localStorage.removeItem('redirect_after_login');
+            if (redirect === 'wishlist.html') {
+                window.location.href = 'wishlist.html';
+            }
+        }
+
+    } catch (error) {
+        console.error('❌ Google login error:', error);
+        showNotification('Login failed. Please try again.');
+    }
+}
+
+// Decode JWT token
+function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')
+    );
+    return JSON.parse(jsonPayload);
+}
+
+// Initialize Google Sign-In
+function initializeGoogleSignIn() {
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+            client_id: '615669861278-5o3lij1fpcforlvtu4dg2eq2vdnlltso.apps.googleusercontent.com',
+            callback: handleGoogleResponse,
+            auto_select: false,
+            cancel_on_tap_outside: false
+        });
+
+        google.accounts.id.renderButton(
+            document.getElementById('googleSignInButton'),
+            {
+                theme: 'outline',
+                size: 'large',
+                width: 380,
+                text: 'continue_with',
+                shape: 'rectangular'
+            }
+        );
+    } else {
+        console.error('Google Sign-In library not loaded');
+        document.getElementById('googleSignInButton').innerHTML = `
+            <button class="social-btn" onclick="alert('Google Sign-In is not available. Please check your internet connection.')">
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                    <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                </svg>
+                Continue with Google
+            </button>
+        `;
+    }
+}
+
+// Handle email login (also sends welcome email for first-time users)
+async function handleLogin(event) {
+    event.preventDefault();
+    const email = event.target.querySelector('input[type="email"]').value;
+    const name = email.split('@')[0];
+    const isFirstTime = isFirstTimeLogin(email);
+
+    const userData = {
+        email: email,
+        name: name,
+        provider: 'email',
+        loginTime: new Date().toISOString(),
+        isFirstLogin: isFirstTime
+    };
+    localStorage.setItem('vastr_user', JSON.stringify(userData));
+
+    // Send welcome email only for first-time users
+    if (isFirstTime) {
+        try {
+            await fetch(`${API_BASE}/auth/welcome-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    name: name,
+                    website_url: window.location.origin
+                })
+            });
+            showNotification('Welcome! Check your email for a special message.');
+            markUserLogin(email);
+        } catch (error) {
+            console.error('Email sending failed:', error);
+            showNotification('Welcome!');
+        }
+    } else {
+        showNotification('Welcome back!');
+    }
+
+    closeAuthModal();
+    updateProfileUI();
+    updateWishlistCount();
+
+    const redirect = localStorage.getItem('redirect_after_login');
+    if (redirect) {
+        localStorage.removeItem('redirect_after_login');
+        if (redirect === 'wishlist.html') {
+            window.location.href = 'wishlist.html';
+        }
+    }
+}
+
+// Logout function
+function logout(event) {
+    event.preventDefault();
+    if (confirm('Are you sure you want to log out?')) {
+        localStorage.removeItem('vastr_user');
+        localStorage.removeItem('vastr_wishlist');
+        // Don't remove login history - we want to track this
+
+        showNotification('Logged out successfully');
+        updateProfileUI();
+        updateWishlistCount();
+        updateHeartIcons();
+        document.getElementById('profileDropdown').classList.remove('active');
+    }
+}
 
 function createAuthModal() {
     const modalHTML = `
         <div class="modal" id="authModal">
             <div class="modal-content">
                 <button class="modal-close" onclick="closeAuthModal()">&times;</button>
-                <h2>The only fashion site you need</h2>
+                <h2>Welcome to Vastr</h2>
+                <p style="color: #666; margin-bottom: 2rem; font-size: 0.95rem;">Sign in to save your wishlist and track orders</p>
+
                 <form class="auth-form" onsubmit="handleLogin(event)">
-                    <input type="email" placeholder="Enter your email address to login or register" required>
-                    <button type="submit">Continue</button>
+                    <input type="email" placeholder="Enter your email address" required>
+                    <button type="submit">Continue with Email</button>
                 </form>
+
                 <div class="auth-divider">OR</div>
-                <button class="social-btn" onclick="loginWithGoogle()">
-                    <svg width="18" height="18" viewBox="0 0 18 18">
-                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-                        <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/>
-                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                    </svg>
-                    Continue with Google
-                </button>
-                <button class="social-btn" onclick="loginWithApple()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                    </svg>
-                    Continue with Apple
-                </button>
+
+                <!-- Google Sign-In Button Container -->
+                <div id="googleSignInButton"></div>
             </div>
         </div>
     `;
@@ -1232,73 +1585,135 @@ function createAuthModal() {
     document.getElementById('authModal').addEventListener('click', (e) => {
         if (e.target.id === 'authModal') closeAuthModal();
     });
-}
-function handleLogin(event) {
-    event.preventDefault();
-    const email = event.target.querySelector('input[type="email"]').value;
-    const userData = {
-        email: email,
-        name: email.split('@')[0],
-        loginTime: new Date().toISOString()
-    };
-    localStorage.setItem('vastr_user', JSON.stringify(userData));
-    closeAuthModal();
-    showNotification('Logged in successfully!');
-    updateWishlistCount();
 
-    // Check for redirect
-    const redirect = localStorage.getItem('redirect_after_login');
-    if (redirect) {
-        localStorage.removeItem('redirect_after_login');
-        window.location.href = redirect;
-    }
+    // Initialize Google Sign-In button
+    initializeGoogleSignIn();
 }
 
-function loginWithGoogle() {
-    const userData = {
-        email: 'user@gmail.com',
-        name: 'Google User',
-        provider: 'google',
-        loginTime: new Date().toISOString()
-    };
-    localStorage.setItem('vastr_user', JSON.stringify(userData));
-    closeAuthModal();
-    showNotification('Logged in with Google!');
-    updateWishlistCount();
+     // ==================== PROFILE FUNCTIONALITY ====================
 
-    // Check for redirect
-    const redirect = localStorage.getItem('redirect_after_login');
-    if (redirect) {
-        localStorage.removeItem('redirect_after_login');
-        window.location.href = redirect;
-    }
+// Update profile UI based on login status
+function updateProfileUI() {
+  const isLoggedInUser = isLoggedIn();
+  const profileDropdown = document.getElementById('profileDropdown');
+  const userIndicator = document.getElementById('userIndicator');
+  const profileMenu = document.getElementById('profileMenu');
+  const profileUserInfo = document.getElementById('profileUserInfo');
+
+  if (isLoggedInUser) {
+    // Show logged in state
+    userIndicator.classList.add('active');
+    profileUserInfo.style.display = 'block';
+    updateProfileUserInfo();
+  } else {
+    // Show logged out state
+    userIndicator.classList.remove('active');
+    profileUserInfo.style.display = 'none';
+  }
+
+  updateWishlistCount(); // Also update wishlist count
 }
 
-function loginWithApple() {
-    const userData = {
-        email: 'user@icloud.com',
-        name: 'Apple User',
-        provider: 'apple',
-        loginTime: new Date().toISOString()
-    };
-    localStorage.setItem('vastr_user', JSON.stringify(userData));
-    closeAuthModal();
-    showNotification('Logged in with Apple!');
-    updateWishlistCount();
+// Update user info in profile dropdown
+function updateProfileUserInfo() {
+  const user = getUserData();
+  if (user) {
+    document.getElementById('profileUserName').textContent = user.name || 'User';
+    document.getElementById('profileUserEmail').textContent = user.email;
 
-    // Check for redirect
-    const redirect = localStorage.getItem('redirect_after_login');
-    if (redirect) {
-        localStorage.removeItem('redirect_after_login');
-        window.location.href = redirect;
-    }
+    // Update avatar with initials
+    const initials = (user.name || user.email.split('@')[0])
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+    document.getElementById('profileAvatar').textContent = initials;
+  }
 }
+
+// Profile dropdown toggle
+function toggleProfileDropdown() {
+  const profileDropdown = document.getElementById('profileDropdown');
+  const isActive = profileDropdown.classList.contains('active');
+
+  // Close all other dropdowns
+  document.querySelectorAll('.profile-dropdown').forEach(dd => {
+    dd.classList.remove('active');
+  });
+
+  if (!isActive) {
+    profileDropdown.classList.add('active');
+  }
+}
+
+// Close profile dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const profileDropdown = document.getElementById('profileDropdown');
+  if (!e.target.closest('.profile-dropdown')) {
+    profileDropdown.classList.remove('active');
+  }
+});
+
+// Profile button click handler
+document.getElementById('profileDropdown').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (isLoggedIn()) {
+    toggleProfileDropdown();
+  } else {
+    handleProfileClick();
+  }
+});
+
+// Handle profile icon click
+function handleProfileClick() {
+  if (!isLoggedIn()) {
+    showAuthModal();
+    // Set redirect to show profile after login
+    localStorage.setItem('redirect_after_login', 'profile');
+  } else {
+    toggleProfileDropdown();
+  }
+}
+
+function showAccountSettings(event) {
+  event.preventDefault();
+  showNotification('Account settings coming soon!');
+  document.getElementById('profileDropdown').classList.remove('active');
+}
+
+// Placeholder functions for profile menu items
+function showOrders(event) {
+  event.preventDefault();
+  showNotification('Orders feature coming soon!');
+  document.getElementById('profileDropdown').classList.remove('active');
+}
+
+
+
+// Get user data function
+function getUserData() {
+  const userData = localStorage.getItem('vastr_user');
+  return userData ? JSON.parse(userData) : null;
+}
+
+// Update handleWishlistClick to use updated UI
+// Make sure this is updated in handleWishlistClick
+function handleWishlistClick() {
+  if (!isLoggedIn()) {
+    showAuthModal();
+    localStorage.setItem('redirect_after_login', 'wishlist.html');
+  } else {
+    window.location.href = 'wishlist.html';
+  }
+}
+
         // Initialize on page load - SINGLE INITIALIZATION
         window.addEventListener('DOMContentLoaded', () => {
             parseURLParams();
             loadFilterOptions();
             loadProducts();
             updateWishlistCount();
+            updateProfileUI();
         });
     </script>
 

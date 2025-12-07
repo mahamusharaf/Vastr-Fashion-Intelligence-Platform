@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from routers import brands, general, products,search
+from routers import brands, general, products,search, email_service
 from database import test_connection
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -40,3 +41,4 @@ app.include_router(brands.router)
 app.include_router(general.router)
 app.include_router(products.router)
 app.include_router(search.router)
+app.include_router(email_service.router)

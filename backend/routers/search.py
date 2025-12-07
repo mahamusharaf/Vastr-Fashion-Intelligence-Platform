@@ -74,7 +74,7 @@ router = APIRouter(
 @router.get("/", response_model=SearchResponse)
 async def search_products(
         q: str = Query(..., description="Search query (e.g., 'embroidered lawn suit')"),
-        limit: int = Query(20, ge=1, le=100, description="Number of results to return"),
+        limit: int = Query(100, ge=1, le=100, description="Number of results to return"),
         brand: Optional[str] = Query(None, description="Filter by brand ID"),
         min_price: Optional[float] = Query(None, description="Minimum price in PKR"),
         max_price: Optional[float] = Query(None, description="Maximum price in PKR"),

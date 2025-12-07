@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import products
+from email_service import router as email_router
 
 app = FastAPI(title="Vastr Fashion API")
 
