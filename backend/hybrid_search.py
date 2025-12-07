@@ -36,7 +36,7 @@ class VastrHybridSearch:
 
         # Load all products
         self.products_list = list(self.products.find())
-        print(f"✅ Loaded {len(self.products_list)} products for search indexing")
+        print(f" Loaded {len(self.products_list)} products for search indexing")
 
         # Initialize search indices
         self.bm25_index = None
@@ -164,7 +164,7 @@ class VastrHybridSearch:
 
     def _build_search_indices(self):
         """Build BM25 and TF-IDF indices"""
-        print("\n🔨 Building search indices...")
+        print("\n Building search indices...")
 
         # Create searchable text for each product
         self.product_texts = [
@@ -173,22 +173,22 @@ class VastrHybridSearch:
         ]
 
         # Build BM25 Index
-        print("   📚 Building BM25 index...")
+        print("    Building BM25 index...")
         tokenized_corpus = [text.split() for text in self.product_texts]
         self.bm25_index = BM25Okapi(tokenized_corpus)
-        print("   ✅ BM25 index built")
+        print("    BM25 index built")
 
         # Build TF-IDF Index for Cosine Similarity
-        print("   📊 Building TF-IDF index...")
+        print("    Building TF-IDF index...")
         self.tfidf_vectorizer = TfidfVectorizer(
             max_features=5000,
             ngram_range=(1, 2),  # Use unigrams and bigrams
             stop_words='english'
         )
         self.tfidf_matrix = self.tfidf_vectorizer.fit_transform(self.product_texts)
-        print("   ✅ TF-IDF index built")
+        print("   TF-IDF index built")
 
-        print("✅ Search indices ready!")
+        print(" Search indices ready!")
 
     def _bm25_search(self, query: str, top_k: int = 50) -> List[Tuple[int, float]]:
         """
@@ -242,7 +242,7 @@ class VastrHybridSearch:
         Returns:
             List of products with hybrid scores
         """
-        print(f"\n🔍 Searching for: '{query}'")
+        print(f"\n Searching for: '{query}'")
 
         # Perform both searches
         bm25_results = self._bm25_search(query, top_k=100)
@@ -294,7 +294,7 @@ class VastrHybridSearch:
 
             results.append(product)
 
-        print(f"✅ Found {len(results)} results")
+        print(f" Found {len(results)} results")
         return results
 
     def _apply_filters(self, product: Dict, filters: Dict) -> bool:
@@ -400,10 +400,10 @@ def demo_search():
     for query in test_queries:
         results = search_engine.search_with_insights(query, top_k=5)
 
-        print(f"\n🔍 Query: '{query}'")
-        print(f"📊 Found: {results['total_results']} results")
+        print(f"\n Query: '{query}'")
+        print(f" Found: {results['total_results']} results")
 
-        print(f"\n📦 Top 5 Results:")
+        print(f"\n Top 5 Results:")
         for i, product in enumerate(results['products'][:5], 1):
             print(f"\n   {i}. {product.get('title', 'N/A')[:60]}")
             print(f"      Brand: {product.get('brand_name')}")
@@ -411,7 +411,7 @@ def demo_search():
             print(
                 f"      Score: {product.get('search_score', 0):.3f} (BM25: {product.get('bm25_score', 0):.3f}, Cosine: {product.get('cosine_score', 0):.3f})")
 
-        print(f"\n💡 Insights:")
+        print(f"\nInsights:")
         insights = results['insights']
         print(f"   Brands: {', '.join(f'{b}({c})' for b, c in list(insights['brands'].items())[:3])}")
         if insights['price_range']:
@@ -429,5 +429,5 @@ def demo_search():
 if __name__ == "__main__":
     demo_search()
 
-    print("\n✅ Hybrid Search Engine Ready!")
-    print("\n📚 Usage Example:")
+    print("\n Hybrid Search Engine Ready!")
+    print("\n Usage Example:")

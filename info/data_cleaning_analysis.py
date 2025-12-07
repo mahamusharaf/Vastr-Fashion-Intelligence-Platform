@@ -115,16 +115,16 @@ class DataAnalyzer:
         self.db = self.client[DATABASE_NAME]
         self.products = self.db['products']
         self.brands = self.db['brands']
-        print("✅ Connected to database")
+        print(" Connected to database")
 
     def get_all_products_df(self):
         """Load all products into pandas DataFrame"""
         products = list(self.products.find())
         if not products:
-            print("❌ No products found in database!")
+            print(" No products found in database!")
             return None
         df = pd.DataFrame(products)
-        print(f"📊 Loaded {len(df)} products")
+        print(f" Loaded {len(df)} products")
 
         # Map brand_id to brand_name
         if 'brand_id' in df.columns:
@@ -147,7 +147,7 @@ class DataAnalyzer:
         print("DATA QUALITY REPORT")
         print("=" * 60)
 
-        print("\n📋 Missing Data Analysis:")
+        print("\n Missing Data Analysis:")
         missing = df.isnull().sum()
         total = len(df)
         key_fields = ['title', 'price_min', 'brand_id', 'product_type', 'available', 'images']

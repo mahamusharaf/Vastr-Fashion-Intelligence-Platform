@@ -1,36 +1,30 @@
-from fastapi import APIRouter, HTTPException
-from pymongo import MongoClient
+from fastapi import APIRouter
 from typing import List
+from database import get_products_collection   # ← THIS IS THE ONLY THING THAT MATTERS
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
-MONGO_URI = "mongodb://localhost:27017/"
-DATABASE_NAME = "vastr_fashion_db"
-client = MongoClient(MONGO_URI)
-db = client[DATABASE_NAME]
-products_col = db['products']
+# THIS IS THE ONLY LINE THAT COUNTS
+products_col = get_products_collection()
 
-@router.get("/", response_model=List[dict])
-def get_products(limit: int = 50):
-    products = list(products_col.find().limit(limit))
-    if not products:
-        raise HTTPException(status_code=404, detail="No products found")
+@router.get("/")
+async def get_products(limit: int = 5):
+    print("\nDEBUG: Using collection →", products_col.name)           # ← WILL SHOW "products"
+    print("DEBUG: Database name →", products_col.database.name)       # ← WILL SHOW "vastr"
+    count = products_col.count_documents({})
+    print(f"DEBUG: TOTAL PRODUCTS IN DB = {count}\n")                # ← MUST SHOW 12364
+
+    cursor = products_col.find().limit(limit)
+    products = list(cursor)
+    
+    print(f"DEBUG: Actually fetched {len(products)} products")       # ← MUST BE > 0
+
     for p in products:
         p["_id"] = str(p["_id"])
-    return products
 
-@router.get("/{product_id}")
-def get_product(product_id: str):
-    product = products_col.find_one({"product_id": product_id})
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    product["_id"] = str(product["_id"])
-    return product
-
-@router.get("/page/{page_num}")
-def get_products_page(page_num: int = 1, page_size: int = 20):
-    skip = (page_num - 1) * page_size
-    products = list(products_col.find().skip(skip).limit(page_size))
-    for p in products:
-        p["_id"] = str(p["_id"])
-    return products
+    return {
+        "products": products,
+        "total_products": count,
+        "page": 1,
+        "limit": limit
+    }

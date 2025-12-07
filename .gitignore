@@ -1,0 +1,2 @@
+# Ignore image cache (large model files)
+backend/image_cache/

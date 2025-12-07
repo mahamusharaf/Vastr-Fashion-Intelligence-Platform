@@ -464,6 +464,27 @@
                 flex-wrap: wrap;
             }
         }
+        .nav-right .search-image-btn {
+        /* Dark background */
+    border: none;
+    border-radius: 50px;         /* Oval shape */
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
+}
+
+
+
+.nav-right .search-image-btn .search-image-icon {
+    width: 24px;     /* Adjust size */
+    height: 24px;
+    object-fit: contain;
+    display: block;
+}
+
     </style>
 </head>
 <body>
@@ -498,11 +519,14 @@
                 </svg>
             </button>
         </div>
+         <button class="nav-icon search-image-btn" onclick="window.location.href='image-search.html'">
+    <img src="/frontend/logos/icons8-image-24.png" alt="Search by Image" class="search-image-icon">
+</button>
     </nav>
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-        <a href="index.html">Home</a> / <span>Wishlist</span>
+        <a href="home.html">Home</a> / <span>Wishlist</span>
     </div>
 
     <!-- Wishlist Container -->
