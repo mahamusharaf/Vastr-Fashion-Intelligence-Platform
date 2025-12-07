@@ -1,12 +1,9 @@
 from pymongo import MongoClient
-import os
 
-from info.data_cleaning_analysis import DATABASE_NAME
-
-# MongoDB settings
-MONGODB_URL="mongodb://localhost:27017"
-DATABASE_NAME="vastr_fashion_db"
-COLLECTION_NAME="products"
+# FIXED & FINAL — NO IMPORTS FROM ANYWHERE ELSE
+MONGODB_URL = "mongodb://localhost:27017"
+DATABASE_NAME = "vastr"        # ← This is where we inserted 12,364 products
+COLLECTION_NAME = "products"   # ← This is the correct collection name
 
 # Create MongoDB client
 client = MongoClient(MONGODB_URL)
@@ -29,10 +26,10 @@ def test_connection():
     try:
         client.admin.command('ping')
         count = products_collection.count_documents({})
-        print(f"✅ MongoDB connected! Found {count} products")
+        print(f"MongoDB connected! Found {count} products")
         return True
     except Exception as e:
-        print(f"❌ MongoDB connection failed: {e}")
+        print(f"MongoDB connection failed: {e}")
         return False
 
 
