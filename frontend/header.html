@@ -1,0 +1,50 @@
+<!-- header.html -->
+<div class="top-bar">CURATED PAKISTANI FASHION • NEW ARRIVALS DAILY</div>
+
+<nav>
+    <a href="home.html" class="logo">VASTR</a>
+
+    <div class="nav-left">
+        <div class="nav-links">
+            <a href="products.html?gender=women">WOMEN</a>
+            <a href="products.html">BRANDS</a>
+            <a href="products.html?sale=true">SALE">SALE</a>
+        </div>
+    </div>
+
+    <div class="nav-search">
+        <input type="text" class="nav-search-input" placeholder="Search products, brands..." id="navSearchInput"
+               onkeypress="if(event.key==='Enter') location.href='products.html?q='+encodeURIComponent(this.value)">
+        <svg class="nav-search-icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="2"/>
+            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+        </svg>
+    </div>
+
+    <div class="nav-right">
+        <a href="image-search.html" class="image-search-btn">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/></svg>
+            Search by Image
+        </a>
+
+        <button class="nav-icon" onclick="location.href='wishlist.html'">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="wishlist-count" id="wishlistCount">0</span>
+        </button>
+
+        <div class="nav-icon profile-icon profile-dropdown" title="Account" id="profileDropdown">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div class="user-indicator" id="userIndicator"></div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Update wishlist count
+    const wishlist = JSON.parse(localStorage.getItem('vastr_wishlist') || '[]');
+    const countEl = document.getElementById('wishlistCount');
+    if(countEl){
+        countEl.textContent = wishlist.length;
+        if(wishlist.length > 0) countEl.classList.add('active');
+    }
+</script>
