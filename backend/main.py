@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from routers import brands, general, products,search, email_service
+from routers import brands, general, products,search, email_service, image_search
 from database import test_connection
 
 
@@ -42,3 +42,4 @@ app.include_router(general.router)
 app.include_router(products.router)
 app.include_router(search.router)
 app.include_router(email_service.router)
+app.include_router(image_search.router)

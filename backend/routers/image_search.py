@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from PIL import Image
-import base64, io, numpy as np, torch, os
+import base64, io, numpy as np, torch, os, re
 from transformers import ViTImageProcessor, ViTModel
 from sklearn.metrics.pairwise import cosine_similarity
 from database import get_products_collection
@@ -140,17 +140,43 @@ def extract_product_data(doc):
     link = doc.get("url", "#")
     brand = doc.get("brand_name", "")
 
-    # Try to get image_url, fallback to placeholder
-    image = doc.get("image_url") or doc.get("images", [None])[0] if isinstance(doc.get("images"), list) else None
+    # Get images array - your DB stores images as objects with "src" field
+    images = doc.get("images", [])
+    image = None
 
-    # If no image, use a placeholder
+    if images and isinstance(images, list) and len(images) > 0:
+        # Get the first image from the array
+        first_image = images[0]
+
+        # Images are objects with "src" field
+        if isinstance(first_image, dict):
+            image = first_image.get("src")
+        elif isinstance(first_image, str):
+            # Fallback if it's a string
+            image = first_image
+
+    # Clean up image URL if it exists
+    if image:
+        image = str(image).strip()
+
+        # Your Shopify URLs are missing the file extension - add it
+        # Check if URL is missing extension
+        if not re.search(r'\.(jpg|jpeg|png|gif|webp)$', image, re.IGNORECASE):
+            # Add .jpg extension (Shopify default)
+            image = image + '.jpg'
+
+        # Ensure it starts with http:// or https://
+        if not image.startswith(('http://', 'https://')):
+            image = None
+
+    # If no valid image, use a placeholder
     if not image:
         image = "https://via.placeholder.com/400x600/cccccc/666666?text=No+Image"
 
     return {
         "name": f"{brand} - {name}" if brand else str(name),
         "price": int(price) if isinstance(price, (int, float)) else 0,
-        "image": str(image),
+        "image": image,
         "link": str(link)
     }
 
@@ -221,6 +247,117 @@ async def search_by_image(req: ImageSearchRequest):
     return {
         "results": results,
         "total": len(results)
+    }
+
+
+# -------------------
+# Debug Endpoints
+# -------------------
+@router.get("/debug/status")
+async def debug_status():
+    """Quick status check"""
+    return {
+        "model_loaded": _VIT_MODEL is not None,
+        "embeddings_loaded": _EMBEDDINGS is not None,
+        "embedding_count": len(_PRODUCT_IDS) if _PRODUCT_IDS else 0,
+        "db_products": get_products_collection().count_documents({})
+    }
+
+
+@router.get("/debug/first-product")
+async def debug_first_product():
+    """Show the FIRST product in database with all its fields"""
+    product_collection = get_products_collection()
+
+    # Get the very first product
+    doc = product_collection.find_one()
+
+    if not doc:
+        return {"error": "No products in database"}
+
+    # Convert to dict for JSON
+    doc_dict = {}
+    for key, value in doc.items():
+        if key == "_id":
+            doc_dict[key] = str(value)
+        else:
+            doc_dict[key] = value
+
+    return {
+        "total_products": product_collection.count_documents({}),
+        "all_fields": list(doc.keys()),
+        "raw_document": doc_dict
+    }
+
+
+@router.get("/debug/raw-product/{product_id}")
+async def debug_raw_product(product_id: str):
+    """Show raw MongoDB document for a specific product"""
+    product_collection = get_products_collection()
+
+    # Try to find the product
+    doc = get_product_by_id(product_collection, product_id)
+
+    if not doc:
+        return {"error": "Product not found", "tried_id": product_id}
+
+    # Convert ObjectId to string for JSON serialization
+    doc_dict = {}
+    for key, value in doc.items():
+        if key == "_id":
+            doc_dict[key] = str(value)
+        else:
+            doc_dict[key] = value
+
+    return {
+        "product_id": product_id,
+        "found": True,
+        "all_fields": list(doc.keys()),
+        "raw_document": doc_dict
+    }
+
+
+@router.get("/debug/test-search")
+async def debug_test_search():
+    """Test search with first embedding"""
+    if _EMBEDDINGS is None or _PRODUCT_IDS is None:
+        return {"error": "Embeddings not loaded"}
+
+    product_collection = get_products_collection()
+
+    # Use first embedding as test
+    test_emb = _EMBEDDINGS[0]
+    sims = cosine_similarity(test_emb.reshape(1, -1), _EMBEDDINGS)[0]
+    top_idx = np.argsort(sims)[::-1][:10]
+
+    results = []
+    for i in top_idx:
+        pid = _PRODUCT_IDS[i]
+        doc = get_product_by_id(product_collection, pid)
+
+        if doc:
+            product_data = extract_product_data(doc)
+            results.append({
+                "rank": len(results) + 1,
+                "similarity": float(sims[i]),
+                "embedding_id": str(pid),
+                "found_in_db": True,
+                "product_name": doc.get("title", "N/A"),
+                "image_url": product_data["image"] if product_data else None
+            })
+        else:
+            results.append({
+                "rank": len(results) + 1,
+                "similarity": float(sims[i]),
+                "embedding_id": str(pid),
+                "found_in_db": False
+            })
+
+    return {
+        "test_embedding_index": 0,
+        "test_embedding_id": str(_PRODUCT_IDS[0]),
+        "top_10_results": results,
+        "successful_matches": sum(1 for r in results if r["found_in_db"])
     }
 
 

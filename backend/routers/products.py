@@ -1,7 +1,9 @@
-# routers/products.py  ← THIS IS THE ONLY ONE YOU NEED
+# routers/products.py - COMPLETE WORKING VERSION
 from fastapi import APIRouter, Query, HTTPException
 from typing import List, Optional
 from pymongo import MongoClient
+from bson import ObjectId
+import sys
 
 router = APIRouter(prefix="/api/v1")
 
@@ -20,6 +22,7 @@ async def get_products(
         price_max: Optional[int] = Query(None),
         sort: Optional[str] = Query(None),
 ):
+    # Build query
     query = {}
 
     # Brand filter
@@ -30,13 +33,16 @@ async def get_products(
     if category:
         query["product_type"] = {"$in": category}
 
-    # Price filter
-    if price_min is not None or price_max is not None:
-        query["price_min"] = {}
-        if price_min is not None:
-            query["price_min"]["$gte"] = price_min
-        if price_max is not None:
-            query["price_min"]["$lte"] = price_max
+    # Price filter - WORKING VERSION
+    if price_min is not None and price_max is not None:
+        # Both min and max specified
+        query["price_min"] = {"$gte": price_min, "$lte": price_max}
+    elif price_min is not None:
+        # Only min specified (e.g., "Over 10000")
+        query["price_min"] = {"$gte": price_min}
+    elif price_max is not None:
+        # Only max specified (e.g., "Under 3000")
+        query["price_min"] = {"$lte": price_max}
 
     # Sorting
     sort_key, sort_dir = "_id", -1
@@ -48,6 +54,14 @@ async def get_products(
     # Pagination
     skip = (page - 1) * limit
 
+    # DEBUG OUTPUT - MUST SEE THIS IN TERMINAL
+    print("\n" + "="*80, file=sys.stderr, flush=True)
+    print(f"🔍 QUERY: {query}", file=sys.stderr, flush=True)
+    print(f"📊 FILTERS: brands={brand}, categories={category}", file=sys.stderr, flush=True)
+    print(f"💰 PRICE: min={price_min}, max={price_max}", file=sys.stderr, flush=True)
+    print(f"📄 PAGINATION: page={page}, skip={skip}, limit={limit}", file=sys.stderr, flush=True)
+    print("="*80 + "\n", file=sys.stderr, flush=True)
+
     # Execute query
     total = products_col.count_documents(query)
     products = list(
@@ -56,6 +70,12 @@ async def get_products(
         .skip(skip)
         .limit(limit)
     )
+
+    # DEBUG RESULTS
+    print(f"✅ FOUND: {len(products)} products (Total: {total})", file=sys.stderr, flush=True)
+    if products and len(products) > 0:
+        print(f"   First product: {products[0].get('title', 'No title')[:50]} - PKR {products[0].get('price_min', 'N/A')}", file=sys.stderr, flush=True)
+        print(f"   Last product: {products[-1].get('title', 'No title')[:50]} - PKR {products[-1].get('price_min', 'N/A')}", file=sys.stderr, flush=True)
 
     # Convert ObjectId to string
     for p in products:
@@ -71,7 +91,10 @@ async def get_products(
 
 @router.get("/brands")
 async def get_brands():
-    pipeline = [{"$group": {"_id": "$brand_name", "count": {"$sum": 1}}}]
+    pipeline = [
+        {"$group": {"_id": "$brand_name", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
     result = []
     for b in products_col.aggregate(pipeline):
         name = b["_id"]
@@ -80,29 +103,35 @@ async def get_brands():
             "brand_name": name,
             "product_count": b["count"]
         })
-    result.sort(key=lambda x: x["brand_name"])
     return {"brands": result}
+
+
+@router.get("/categories")
+async def get_categories():
+    pipeline = [
+        {"$group": {"_id": "$product_type", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    result = []
+    for c in products_col.aggregate(pipeline):
+        if c["_id"]:
+            result.append({
+                "category_id": c["_id"].lower().replace(" ", "-"),
+                "category_name": c["_id"],
+                "product_count": c["count"]
+            })
+    return {"categories": result}
 
 
 @router.get("/products/{product_id}")
 async def get_product_by_id(product_id: str):
-    """Get a single product by ID"""
     try:
-        # Try to find by product_id field
         product = products_col.find_one({"product_id": product_id})
-
-        # If not found, try by _id (MongoDB ObjectId)
-        if not product:
-            from bson import ObjectId
-            if ObjectId.is_valid(product_id):
-                product = products_col.find_one({"_id": ObjectId(product_id)})
-
+        if not product and ObjectId.is_valid(product_id):
+            product = products_col.find_one({"_id": ObjectId(product_id)})
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
-
-        # Convert ObjectId to string
         product["_id"] = str(product["_id"])
-
         return product
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

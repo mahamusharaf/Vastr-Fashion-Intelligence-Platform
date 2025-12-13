@@ -3,82 +3,93 @@ import {
   View,
   Text,
   ScrollView,
-  TextInput,
+  FlatList,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  RefreshControl,
+  Dimensions
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-// --- IMPORT CENTRALIZED COMPONENT ---
-import ProductCard from "../components/ProductCard"; 
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ProductCard from "../components/ProductCard";
 
-// Use your computer's LAN IP for real device testing
 const API_BASE = "http://192.168.18.22:8000/api/v1";
 
 export default function HomeScreen({ navigation }) {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [latestProducts, setLatestProducts] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsRes, brandsRes, categoriesRes] = await Promise.all([
+          fetch(`${API_BASE}/products?limit=6`),
+          fetch(`${API_BASE}/brands`),
+          fetch(`${API_BASE}/categories`),
+        ]);
+
+        const productsData = await productsRes.json();
+        const brandsData = await brandsRes.json();
+        const categoriesData = await categoriesRes.json();
+
+        setLatestProducts(productsData.products || []);
+        setBrands(brandsData.brands || []);
+        setCategories(categoriesData.categories || []);
+
+        console.log('✅ Categories loaded:', categoriesData.categories?.length);
+
+      } catch (error) {
+        console.error("Home screen fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchData();
   }, []);
-// ... (fetchData and onRefresh functions remain the same) ...
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [productsRes, categoriesRes, brandsRes] = await Promise.all([
-        fetch(`${API_BASE}/products?limit=24`),
-        fetch(`${API_BASE}/categories`),
-        fetch(`${API_BASE}/brands`),
-      ]);
 
-      const parseJSON = async (res) => {
-        const text = await res.text();
-        try {
-          return JSON.parse(text);
-        } catch {
-          return {};
-        }
-      };
+  const renderCategory = ({ item }) => (
+    <TouchableOpacity
+        style={styles.categoryCard}
+        onPress={() => {
+            console.log('Category clicked:', item.category_name);
+            navigation.navigate("AllProducts", {
+                title: item.category_name,
+                filter: { category: item.category_name }
+            });
+        }}
+    >
+        <Text style={styles.categoryName} numberOfLines={1}>
+            {item.category_name || 'Category N/A'}
+        </Text>
+        <Text style={styles.categoryItems}>
+            <Text>{(item.product_count?.toLocaleString() || '0')}</Text>
+            <Text> items</Text>
+        </Text>
+    </TouchableOpacity>
+  );
 
-      const productsData = await parseJSON(productsRes);
-      const categoriesData = await parseJSON(categoriesRes);
-      const brandsData = await parseJSON(brandsRes);
-
-      setProducts(productsData.products || []);
-      setCategories([
-        "All",
-        ...(categoriesData.categories?.slice(0, 5).map((c) => c.category_name) || []),
-      ]);
-      setBrands(brandsData.brands?.slice(0, 6) || []);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setProducts([]);
-      setCategories(["All", "Women", "Brands", "Sale"]);
-      setBrands([]);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchData();
-  };
-
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      // Navigate to the Search Stack Screen
-      navigation.navigate("Search", { query: searchQuery }); 
-    }
-  };
+  const renderBrand = ({ item }) => (
+    <TouchableOpacity
+        style={styles.brandCard}
+        onPress={() => {
+            console.log('Brand clicked:', item.brand_name);
+            navigation.navigate("AllProducts", {
+                title: item.brand_name,
+                filter: { brand: item.brand_name }
+            });
+        }}
+    >
+        <Text style={styles.brandName} numberOfLines={1}>
+            {item.brand_name || 'Brand N/A'}
+        </Text>
+        <Text style={styles.brandItems}>
+            <Text>{(item.product_count?.toLocaleString() || '0')}</Text>
+            <Text> items</Text>
+        </Text>
+    </TouchableOpacity>
+  );
 
   if (loading) {
     return (
@@ -89,139 +100,171 @@ export default function HomeScreen({ navigation }) {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Ionicons name="search-outline" size={20} color="#999" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search products, brands..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={handleSearch}
-          placeholderTextColor="#999"
-        />
-      </View>
-      
-      {/* Categories Bar (NEW: Horizontal Scroll) */}
-      <View style={styles.categoryBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {categories.map((category) => (
-            <TouchableOpacity 
-              key={category} 
-              style={[
-                styles.categoryChip, 
-                selectedCategory === category && styles.categoryChipActive
-              ]}
-              onPress={() => setSelectedCategory(category)}
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={styles.container}>
+        {/* ✅ UPDATED HEADER - Logo as Text (Like Web) */}
+        <View style={styles.header}>
+            <Text style={styles.logo}>VASTR</Text>
+            <TouchableOpacity
+                style={styles.searchBar}
+                onPress={() => navigation.navigate("Search")}
             >
-              <Text style={[
-                styles.categoryText,
-                selectedCategory === category && styles.categoryTextActive
-              ]}>
-                {category}
-              </Text>
+                <Ionicons name="search-outline" size={18} color="#999" />
+                <Text style={styles.searchText}>Search products, brands...</Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Products Preview */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Latest Arrivals</Text>
-          <TouchableOpacity
-            // Using the HomeStack navigation defined in App.js
-            onPress={() => navigation.navigate("AllProducts", { products })} 
-          >
-            <Text style={styles.viewAll}>View All</Text>
-          </TouchableOpacity>
         </View>
 
-        <View style={styles.productGrid}>
-          {products.slice(0, 6).map((product) => (
-            // --- USE CENTRALIZED PRODUCT CARD ---
-            <ProductCard 
-                key={product.product_id} 
-                product={product} 
-                navigation={navigation} 
-            />
-          ))}
-        </View>
-      </View>
-    </ScrollView>
-  );
-}
-
-// All Products Screen (Keep here, but update to use ProductCard)
-export function AllProductsScreen({ route, navigation }) {
-  const { products } = route.params;
-
-  return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <Text style={{ fontSize: 22, fontWeight: "700", margin: 16 }}>All Products</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {products.map((product) => (
-          // --- USE CENTRALIZED PRODUCT CARD ---
-          <ProductCard 
-            key={product.product_id} 
-            product={product} 
-            navigation={navigation} 
+        {/* Shop by Category */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { paddingHorizontal: 15, marginBottom: 10 }]}>
+            <Text>Shop fashion from </Text>
+            <Text style={{fontWeight: '900'}}>{categories.length}+</Text>
+            <Text> categories</Text>
+          </Text>
+          <FlatList
+            data={categories}
+            renderItem={renderCategory}
+            keyExtractor={(item, index) => item.category_name || `category-${index}`}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.flatListContainer}
           />
-        ))}
-      </View>
-    </ScrollView>
+        </View>
+
+        {/* Shop by Brand */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Shop by Brand</Text>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("AllProducts", { title: "All Brands" })}
+            >
+              <Text style={styles.viewAll}>View All Brands</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={brands}
+            renderItem={renderBrand}
+            keyExtractor={(item, index) => item.brand_id || `brand-${index}`}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.flatListContainer}
+          />
+        </View>
+
+        {/* Latest Arrivals */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Latest Arrivals</Text>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("AllProducts", { title: "Latest Arrivals" })}
+            >
+              <Text style={styles.viewAll}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={latestProducts}
+            renderItem={({ item }) => (
+                <ProductCard product={item} navigation={navigation} />
+            )}
+            keyExtractor={(item, index) => item.product_id?.toString() || `latest-product-${index}`}
+            numColumns={2}
+            scrollEnabled={false}
+            contentContainerStyle={styles.gridContainer}
+          />
+        </View>
+
+        <View style={{ height: 50 }} />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-// --- REMOVE ProductCard COMPONENT FROM HERE ---
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    margin: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 25,
-  },
-  searchInput: { flex: 1, marginLeft: 8, fontSize: 16, color: "#333" },
-  
-  // New Styles for Category Bar
-  categoryBar: {
-    marginBottom: 24,
-    paddingHorizontal: 16,
-  },
-  categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
-    marginRight: 8,
-  },
-  categoryChipActive: {
-    backgroundColor: "#d81b60",
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
-  },
-  categoryTextActive: {
-    color: "#fff",
-  },
-  
-  // Existing Styles
-  section: { paddingHorizontal: 16, marginBottom: 24 },
-  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
-  sectionTitle: { fontSize: 18, fontWeight: "700" },
-  viewAll: { fontSize: 14, color: "#d81b60", textDecorationLine: "underline" },
-  productGrid: { flexDirection: "row", flexWrap: "wrap" },
-  // productCard styles removed as they are in ProductCard.js
+    safeArea: { flex: 1, backgroundColor: '#fff' },
+    container: { flex: 1, backgroundColor: "#fff" },
+    centered: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" },
+
+    // ✅ UPDATED HEADER STYLES - Matches Web
+    header: {
+        padding: 15,
+        paddingBottom: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e8e8e8'
+    },
+    logo: {
+        fontSize: 24,           // Matches web: 1.8rem
+        fontWeight: '900',      // Matches web: 700 (but 900 is bolder, better for mobile)
+        color: '#000',          // Matches web
+        letterSpacing: -1,      // Matches web: -1px
+        marginRight: 15
+    },
+    searchBar: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',  // Matches web: #f8f8f8
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: '#e8e8e8'       // Added border like web
+    },
+    searchText: {
+        marginLeft: 8,
+        color: '#999',
+        fontSize: 14
+    },
+
+    // Sections
+    section: { paddingVertical: 15 },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        marginBottom: 10
+    },
+    sectionTitle: { fontSize: 18, fontWeight: "700" },
+    viewAll: { fontSize: 14, color: '#d81b60', fontWeight: '600' },
+
+    // Category Cards
+    flatListContainer: { paddingHorizontal: 10 },
+    categoryCard: {
+        width: 130,
+        height: 100,
+        backgroundColor: '#f8f8f8',
+        borderRadius: 10,
+        marginHorizontal: 5,
+        justifyContent: 'flex-end',
+        padding: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    categoryName: { fontSize: 14, fontWeight: '700', color: '#333' },
+    categoryItems: { fontSize: 12, color: '#777' },
+
+    // Brand Cards
+    brandCard: {
+        width: 150,
+        height: 100,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        marginHorizontal: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#eee',
+    },
+    brandName: { fontSize: 16, fontWeight: '700', color: '#d81b60', textAlign: 'center' },
+    brandItems: { fontSize: 12, color: '#999', marginTop: 4 },
+
+    // Product Grid
+    gridContainer: { paddingHorizontal: 4 },
+    noResultsText: { fontSize: 16, color: '#666' }
 });

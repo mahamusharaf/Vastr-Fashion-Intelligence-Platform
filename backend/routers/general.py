@@ -29,39 +29,3 @@ async def health_check():
         return {"api_status": "error", "database": "disconnected"}
 
 
-@router.get("/products")
-async def get_products(
-    limit: int = Query(20, ge=1, le=100),
-    page: int = Query(1, ge=1),
-    brand: Optional[str] = None,
-    category: Optional[str] = None,
-    min_price: Optional[float] = None,
-    max_price: Optional[float] = None,
-    search: Optional[str] = None
-):
-    query = {}
-    if brand:
-        query["brand_name"] = brand.title()
-    if category:
-        query["product_type"] = category
-    if min_price is not None:
-        query["price_min"] = {"$gte": min_price}
-    if max_price is not None:
-        query.setdefault("price_min", {})["$lte"] = max_price
-    if search:
-        query["$text"] = {"$search": search}
-
-    skip = (page - 1) * limit
-    total = products_col.count_documents(query)
-    cursor = products_col.find(query).skip(skip).limit(limit)
-    products = list(cursor)
-
-    for p in products:
-        p["_id"] = str(p["_id"])
-
-    return {
-        "products": products,
-        "total_products": total,
-        "page": page,
-        "limit": limit
-    }
