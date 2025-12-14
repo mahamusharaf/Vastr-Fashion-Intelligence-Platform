@@ -766,6 +766,7 @@ body.image-search-page .image-search-btn { display:none !important; }
     </style>
 </head>
 <body>
+     <script src="config.js"></script>
     <!-- Top Banner -->
     <div class="top-bar">
         CURATED PAKISTANI FASHION • NEW ARRIVALS DAILY
@@ -963,8 +964,6 @@ body.image-search-page .image-search-btn { display:none !important; }
     defer>
 </script>
         <script>
-        // API Configuration
-        const API_BASE = 'http://localhost:8000/api/v1';
 
         // Debounce function for search suggestions
         function debounce(func, wait) {
@@ -980,7 +979,7 @@ body.image-search-page .image-search-btn { display:none !important; }
         }
         async function loadBrandsWithLogos() {
         try {
-            const res = await fetch('http://localhost:8000/api/v1/brands');
+            const res = await fetch(`${API_BASE}/brands`);
             const data = await res.json();
 
             const popularBrands = data.brands
