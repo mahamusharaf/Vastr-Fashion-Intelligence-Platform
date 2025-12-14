@@ -766,31 +766,7 @@ body.image-search-page .image-search-btn { display:none !important; }
     </style>
 </head>
 <body>
-    <script>
-    let API_BASE = 'https://maha1326-vastr-fashion-api.hf.space/api/v1'; // Fallback
 
-// Fetch API config from environment
-async function initializeApp() {
-    try {
-        const response = await fetch('/api/config');
-        const config = await response.json();
-        API_BASE = config.apiUrl;
-        console.log('✅ Using API URL:', API_BASE);
-    } catch (error) {
-        console.warn('⚠️ Could not load config, using fallback URL');
-    }
-    
-    // Now load everything
-    await Promise.all([
-        loadProducts(),
-        loadBrandsWithLogos(),
-        loadCategories()
-    ]);
-    
-    updateProfileUI();
-    updateWishlistCount();
-}
-    </script>
     <!-- Top Banner -->
     <div class="top-bar">
         CURATED PAKISTANI FASHION • NEW ARRIVALS DAILY
@@ -987,8 +963,31 @@ async function initializeApp() {
     domain="app.rubikchat.com"
     defer>
 </script>
-        <script>
+<script>
+// ==================== API CONFIGURATION ====================
+let API_BASE = 'https://maha1326-vastr-fashion-api.hf.space/api/v1'; // Fallback
 
+// Fetch API config from environment
+async function initializeApp() {
+    try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        API_BASE = config.apiUrl;
+        console.log('✅ Using API URL:', API_BASE);
+    } catch (error) {
+        console.warn('⚠️ Could not load config, using fallback URL');
+    }
+    
+    // Now load everything
+    await Promise.all([
+        loadProducts(),
+        loadBrandsWithLogos(),
+        loadCategories()
+    ]);
+    
+    updateProfileUI();
+    updateWishlistCount();
+}
         // Debounce function for search suggestions
         function debounce(func, wait) {
             let timeout;
