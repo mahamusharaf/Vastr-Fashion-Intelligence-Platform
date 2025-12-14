@@ -766,13 +766,31 @@ body.image-search-page .image-search-btn { display:none !important; }
     </style>
 </head>
 <body>
-     
     <script>
-    <script>
-    const API_BASE = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
-    console.log('🔗 API Base URL:', API_BASE);
-</script>
-</script>
+    let API_BASE = 'https://maha1326-vastr-fashion-api.hf.space/api/v1'; // Fallback
+
+// Fetch API config from environment
+async function initializeApp() {
+    try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        API_BASE = config.apiUrl;
+        console.log('✅ Using API URL:', API_BASE);
+    } catch (error) {
+        console.warn('⚠️ Could not load config, using fallback URL');
+    }
+    
+    // Now load everything
+    await Promise.all([
+        loadProducts(),
+        loadBrandsWithLogos(),
+        loadCategories()
+    ]);
+    
+    updateProfileUI();
+    updateWishlistCount();
+}
+    </script>
     <!-- Top Banner -->
     <div class="top-bar">
         CURATED PAKISTANI FASHION • NEW ARRIVALS DAILY
@@ -1720,13 +1738,8 @@ async function loadBrands() {
     loadBrandsWithLogos(); // Use the existing function
 }
 
-// Fix the DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
-    loadProducts();
-    loadBrandsWithLogos();  // ✅ Fixed
-    loadCategories();       // ✅ Add this
-    updateProfileUI();      // ✅ Add this
-    updateWishlistCount();  // ✅ Add this
+    initializeApp();
 });
 
     </script>
