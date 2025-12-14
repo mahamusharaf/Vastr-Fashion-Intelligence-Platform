@@ -1,8 +1,8 @@
-// config.js
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
-const API_BASE = API_URL; // Add this line for compatibility
+// config.js - Browser compatible version
+const API_URL = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
+const API_BASE = API_URL; // Compatibility
 
-export const API_ENDPOINTS = {
+const API_ENDPOINTS = {
   products: `${API_URL}/products`,
   brands: `${API_URL}/brands`,
   categories: `${API_URL}/categories`,
@@ -10,4 +10,5 @@ export const API_ENDPOINTS = {
   health: `${API_URL}/health`,
 };
 
-export default API_URL;
+// Log to verify it's loaded
+console.log('✅ Config loaded! API URL:', API_URL);
