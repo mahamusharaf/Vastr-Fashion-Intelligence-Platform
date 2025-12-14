@@ -1024,24 +1024,6 @@ async function initializeApp() {
             document.getElementById('brandsGrid').innerHTML = '<p style="text-align:center; color:#999;">Brands failed to load</p>';
         }
     }
-document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // Load everything in parallel for better performance
-                await Promise.all([
-                    loadProducts(),
-                    loadBrandsWithLogos(),
-                    loadCategories()
-                ]);
-
-                // Initialize UI after data loads
-                updateProfileUI();
-                updateWishlistCount();
-
-                console.log('✅ Vastr initialized successfully!');
-            } catch (error) {
-                console.error('❌ Initialization failed:', error);
-            }
-        });
 
 
         // ==================== LOAD CATEGORIES ====================
@@ -1196,11 +1178,7 @@ async function loadProducts() {
             }
         });
 
-      // ==================== INITIALIZE ON PAGE LOAD ====================
-    window.addEventListener('DOMContentLoaded', () => {
-    loadProducts();  // Load products directly
-    loadBrands();
-});
+
 
 let searchTimeout;
 
