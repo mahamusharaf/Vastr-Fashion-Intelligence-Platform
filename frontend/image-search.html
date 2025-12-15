@@ -538,11 +538,19 @@ document.getElementById('searchBtn').onclick=async()=>{
             r.onerror=err=>reject(err);
             r.readAsDataURL(file);
         });
-        const res=await fetch('http://localhost:8000/api/v1/search/image',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({image:b64, limit:10})});
+        // FIXED: Use API_BASE instead of hardcoded localhost
+        const res=await fetch(`${API_BASE}/search/image`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({image:b64, limit:10})
+        });
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
         const data=await res.json();
         displayResults(data.results||data);
-    } catch(err){ alert('Backend error or offline. Check console.'); console.error(err); }
+    } catch(err){ 
+        alert('Backend error or offline. Check console.'); 
+        console.error(err); 
+    }
     finally{ btn.disabled=false; txt.textContent='Search Similar Products'; }
 };
 function displayResults(products){
