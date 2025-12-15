@@ -2,3 +2,5 @@
 backend/image_cache/
 **/__pycache__/
 *.pyc
+RESEND_API_KEY=re_v7doS8tm_E1ZPFrisPFac2mxLorVzr6eo
+MONGODB_URL="mongodb+srv://mahamusharaf1326_db_user:VastrFashion2024@cluster0.e4mcd16.mongodb.net/vastr_fashion_db?retryWrites=true&w=majority"
