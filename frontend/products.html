@@ -1138,24 +1138,16 @@ function displayProducts(products) {
             imageUrl = p.image;
         }
 
-        // USE DIFFERENT PROXIES - Try multiple options
-        let proxyImageUrl;
+        // FIXED: Load images DIRECTLY - no proxy needed
+        let finalImageUrl;
         
         if (!imageUrl || imageUrl.trim() === '') {
-            proxyImageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999?text=No+Image';
+            finalImageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999?text=No+Image';
         } else if (imageUrl.includes('placeholder')) {
-            proxyImageUrl = imageUrl;
+            finalImageUrl = imageUrl;
         } else {
-            const cleanImageUrl = imageUrl.trim();
-            
-            // OPTION 1: Try Cloudinary (more reliable)
-            proxyImageUrl = `https://res.cloudinary.com/demo/image/fetch/w_600,h_800,c_fill,f_auto,q_auto/${encodeURIComponent(cleanImageUrl)}`;
-            
-            // OPTION 2: Or use imgproxy.net (uncomment to try this instead)
-            // proxyImageUrl = `https://imgproxy.net/insecure/rs:fill:600:800/plain/${cleanImageUrl}`;
-            
-            // OPTION 3: Or try loading images directly (uncomment to try)
-            // proxyImageUrl = cleanImageUrl;
+            // Use direct URL - Shopify CDN works when loaded directly from browser
+            finalImageUrl = imageUrl.trim();
         }
 
         const priceDisplay = `PKR ${price.toLocaleString()}`;
@@ -1169,16 +1161,18 @@ function displayProducts(products) {
                             title: \`${productName.replace(/`/g, '').replace(/'/g, "\\'")}\`,
                             brand: '${brandName}',
                             price: '${priceDisplay}',
-                            image: '${proxyImageUrl}'
+                            image: '${finalImageUrl}'
                         })">
                     <svg viewBox="0 0 24 24">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
                 </button>
                 <div class="product-image" onclick="viewProduct('${productId}')">
-                    <img src="${proxyImageUrl}"
+                    <img src="${finalImageUrl}"
                          alt="${productName}"
                          loading="lazy"
+                         crossorigin="anonymous"
+                         referrerpolicy="no-referrer"
                          onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400/f5f5f5/999?text=No+Image';">
                 </div>
                 <div class="product-brand">${brandName}</div>
