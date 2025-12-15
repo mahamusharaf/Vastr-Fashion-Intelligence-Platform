@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <title>My Wishlist - Vastr</title>
     <style>
         * {
@@ -176,18 +177,6 @@
 
         .filter-btn:hover {
             border-color: #000;
-        }
-
-        .sort-dropdown {
-            padding: 0.6rem 2rem 0.6rem 1rem;
-            border: 1px solid #e8e8e8;
-            background: #fff;
-            font-size: 0.85rem;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.7rem center;
         }
 
         .clear-all {
@@ -366,7 +355,13 @@
         .modal-content h2 {
             font-size: 1.8rem;
             font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            color: #666;
             margin-bottom: 2rem;
+            font-size: 0.95rem;
         }
 
         .auth-form input {
@@ -391,7 +386,6 @@
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
-            margin-bottom: 1rem;
         }
 
         .auth-form button:hover {
@@ -403,41 +397,6 @@
             margin: 1.5rem 0;
             color: #999;
             font-size: 0.85rem;
-        }
-
-        .social-btn {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid #e8e8e8;
-            background: #fff;
-            font-size: 0.9rem;
-            cursor: pointer;
-            margin-bottom: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.7rem;
-        }
-
-        .social-btn:hover {
-            border-color: #000;
-        }
-
-        .toggle-auth {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .toggle-auth a {
-            color: #000;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .toggle-auth a:hover {
-            opacity: 0.7;
         }
 
         @media (max-width: 1024px) {
@@ -464,27 +423,6 @@
                 flex-wrap: wrap;
             }
         }
-        .nav-right .search-image-btn {
-        /* Dark background */
-    border: none;
-    border-radius: 50px;         /* Oval shape */
-    padding: 10px 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-   
-}
-
-
-
-.nav-right .search-image-btn .search-image-icon {
-    width: 24px;     /* Adjust size */
-    height: 24px;
-    object-fit: contain;
-    display: block;
-}
-
     </style>
 </head>
 <body>
@@ -499,14 +437,14 @@
 
         <div class="nav-center">
             <div class="nav-links">
-                <a href="#women">WOMEN</a>
+                <a href="products.html">WOMEN</a>
                 <a href="#brands">BRANDS</a>
                 <a href="#sale">SALE</a>
             </div>
         </div>
 
         <div class="nav-right">
-            <button class="nav-icon" title="Wishlist" onclick="location.href='wishlist.html'">
+            <button class="nav-icon active" title="Wishlist">
                 <svg viewBox="0 0 24 24">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
@@ -518,10 +456,14 @@
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </button>
+            <button class="nav-icon" title="Search by Image" onclick="window.location.href='image-search.html'">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+            </button>
         </div>
-         <button class="nav-icon search-image-btn" onclick="window.location.href='image-search.html'">
-    <img src="/frontend/logos/icons8-image-24.png" alt="Search by Image" class="search-image-icon">
-</button>
     </nav>
 
     <!-- Breadcrumb -->
@@ -535,13 +477,6 @@
             <h1>Wishlist</h1>
 
             <div class="wishlist-actions" id="wishlistActions" style="display: none;">
-                <button class="filter-btn">Sale</button>
-                <button class="filter-btn">Brands</button>
-                <select class="sort-dropdown">
-                    <option>Last Saved</option>
-                    <option>Price: Low to High</option>
-                    <option>Price: High to Low</option>
-                </select>
                 <span class="clear-all" onclick="clearWishlist()">Clear all</span>
             </div>
         </div>
@@ -551,12 +486,12 @@
             <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
-            <h2>Your wish list is currently empty</h2>
+            <h2>Your wishlist is currently empty</h2>
             <p>Add your favorite products to your wishlist and they'll appear here</p>
-            <a href="products.html" class="shop-btn">Shop sale</a>
+            <a href="products.html" class="shop-btn">Start Shopping</a>
         </div>
 
-        <!-- Product Grid (Hidden by default) -->
+        <!-- Product Grid -->
         <div class="product-grid" id="productGrid" style="display: none;"></div>
     </div>
 
@@ -564,33 +499,18 @@
     <div class="modal" id="authModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            <h2>Welcome to Vastr</h2>
+            <p>Sign in to save your wishlist and track orders</p>
 
-            <div id="loginForm">
-                <h2>The only fashion site you need</h2>
-                <form class="auth-form" onsubmit="handleLogin(event)">
-                    <input type="email" placeholder="Enter your email address to login or register" required>
-                    <button type="submit">Continue</button>
-                </form>
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">Continue with Email</button>
+            </form>
 
-                <div class="auth-divider">OR</div>
+            <div class="auth-divider">OR</div>
 
-                <button class="social-btn" onclick="loginWithGoogle()">
-                    <svg width="18" height="18" viewBox="0 0 18 18">
-                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-                        <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707 0-.593.102-1.17.282-1.709V4.958H.957C.347 6.173 0 7.548 0 9c0 1.452.348 2.827.957 4.042l3.007-2.335z"/>
-                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                    </svg>
-                    Continue with Google
-                </button>
-
-                <button class="social-btn" onclick="loginWithApple()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                    </svg>
-                    Continue with Apple
-                </button>
-            </div>
+            <!-- Google Sign-In Button -->
+            <div id="googleSignInButton"></div>
         </div>
     </div>
 
@@ -608,19 +528,19 @@
             return userData ? JSON.parse(userData) : null;
         }
 
-        // Get wishlist from localStorage
+        // Get wishlist
         function getWishlist() {
             const wishlist = localStorage.getItem('vastr_wishlist');
             return wishlist ? JSON.parse(wishlist) : [];
         }
 
-        // Save wishlist to localStorage
+        // Save wishlist
         function saveWishlist(wishlist) {
             localStorage.setItem('vastr_wishlist', JSON.stringify(wishlist));
             updateWishlistCount();
         }
 
-        // Update wishlist count badge
+        // Update wishlist count
         function updateWishlistCount() {
             const wishlist = getWishlist();
             const countElement = document.getElementById('wishlistCount');
@@ -630,60 +550,88 @@
             }
         }
 
-        // Show auth modal
+        // Show/close auth modal
         function showAuthModal() {
             document.getElementById('authModal').classList.add('active');
         }
 
-        // Close auth modal
         function closeAuthModal() {
             document.getElementById('authModal').classList.remove('active');
         }
 
-        // Handle login
-        function handleLogin(event) {
+        // Handle Google Sign-In response
+        async function handleGoogleResponse(response) {
+            try {
+                const userInfo = parseJwt(response.credential);
+                const userData = {
+                    email: userInfo.email,
+                    name: userInfo.name,
+                    picture: userInfo.picture,
+                    provider: 'google',
+                    loginTime: new Date().toISOString()
+                };
+
+                localStorage.setItem('vastr_user', JSON.stringify(userData));
+                closeAuthModal();
+                loadWishlist();
+                showNotification(`Welcome, ${userInfo.name}!`);
+            } catch (error) {
+                console.error('Google login error:', error);
+                showNotification('Login failed. Please try again.');
+            }
+        }
+
+        // Decode JWT
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(
+                atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                ).join('')
+            );
+            return JSON.parse(jsonPayload);
+        }
+
+        // Initialize Google Sign-In
+        function initializeGoogleSignIn() {
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: 'YOUR-NEW-CLIENT-ID.apps.googleusercontent.com', // REPLACE WITH YOUR NEW CLIENT ID
+                    callback: handleGoogleResponse,
+                    auto_select: false
+                });
+
+                google.accounts.id.renderButton(
+                    document.getElementById('googleSignInButton'),
+                    {
+                        theme: 'outline',
+                        size: 'large',
+                        width: 380,
+                        text: 'continue_with'
+                    }
+                );
+            }
+        }
+
+        // Handle email login
+        async function handleLogin(event) {
             event.preventDefault();
             const email = event.target.querySelector('input[type="email"]').value;
-
-            // Simple mock authentication
             const userData = {
                 email: email,
                 name: email.split('@')[0],
-                loginTime: new Date().toISOString()
-            };
-
-            localStorage.setItem('vastr_user', JSON.stringify(userData));
-            closeAuthModal();
-            loadWishlist();
-        }
-
-        // Social logins (mock)
-        function loginWithGoogle() {
-            const userData = {
-                email: 'user@gmail.com',
-                name: 'Google User',
-                provider: 'google',
+                provider: 'email',
                 loginTime: new Date().toISOString()
             };
             localStorage.setItem('vastr_user', JSON.stringify(userData));
             closeAuthModal();
             loadWishlist();
-        }
-
-        function loginWithApple() {
-            const userData = {
-                email: 'user@icloud.com',
-                name: 'Apple User',
-                provider: 'apple',
-                loginTime: new Date().toISOString()
-            };
-            localStorage.setItem('vastr_user', JSON.stringify(userData));
-            closeAuthModal();
-            loadWishlist();
+            showNotification('Welcome!');
         }
 
         // Load wishlist
-        async function loadWishlist() {
+        function loadWishlist() {
             if (!isLoggedIn()) {
                 document.getElementById('emptyState').style.display = 'block';
                 document.getElementById('productGrid').style.display = 'none';
@@ -704,7 +652,6 @@
             document.getElementById('productGrid').style.display = 'grid';
             document.getElementById('wishlistActions').style.display = 'flex';
 
-            // Display wishlist items
             const grid = document.getElementById('productGrid');
             grid.innerHTML = wishlist.map(item => `
                 <div class="product-card">
@@ -730,6 +677,7 @@
             wishlist = wishlist.filter(item => item.id !== productId);
             saveWishlist(wishlist);
             loadWishlist();
+            showNotification('Removed from wishlist');
         }
 
         // Clear wishlist
@@ -737,6 +685,7 @@
             if (confirm('Are you sure you want to clear your entire wishlist?')) {
                 saveWishlist([]);
                 loadWishlist();
+                showNotification('Wishlist cleared');
             }
         }
 
@@ -753,12 +702,31 @@
             }
         }
 
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 2rem;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #000;
+                color: #fff;
+                padding: 1rem 2rem;
+                border-radius: 4px;
+                z-index: 10000;
+                font-size: 0.9rem;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+
         // Account button handler
         document.getElementById('accountBtn').addEventListener('click', () => {
             if (!isLoggedIn()) {
                 showAuthModal();
             } else {
-                // Show account menu or logout
                 if (confirm('Do you want to logout?')) {
                     localStorage.removeItem('vastr_user');
                     location.reload();
@@ -769,6 +737,7 @@
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             updateWishlistCount();
+            initializeGoogleSignIn();
 
             if (!isLoggedIn()) {
                 showAuthModal();
