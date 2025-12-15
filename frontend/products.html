@@ -1038,7 +1038,7 @@
 }
 
 // NEW FUNCTION: Load search results - WITH DEBUGGING
-// NEW FUNCTION: Load search results - WITH CORS PROXY
+// NEW FUNCTION: Load search results - Direct API call with proper headers
 async function loadSearchResults(query) {
     try {
         document.getElementById('breadcrumbText').textContent = `Search: "${query}"`;
@@ -1063,16 +1063,19 @@ async function loadSearchResults(query) {
             params.append('max_price', currentFilters.priceMax);
         }
 
-        // Direct API URL (will work with CORS proxy)
-        const directApiUrl = `https://maha1326-vastr-fashion-api.hf.space/api/v1/search?${params}`;
+        // Direct HTTPS URL - no proxy needed
+        const searchUrl = `https://maha1326-vastr-fashion-api.hf.space/api/v1/search?${params}`;
         
-        // Use CORS proxy to handle mixed content
-        const corsProxy = 'https://corsproxy.io/?';
-        const searchUrl = corsProxy + encodeURIComponent(directApiUrl);
+        console.log('🔍 Search URL:', searchUrl);
         
-        console.log('🔍 Search URL (via proxy):', searchUrl);
-        
-        const res = await fetch(searchUrl);
+        const res = await fetch(searchUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+            mode: 'cors', // Explicitly set CORS mode
+            credentials: 'omit' // Don't send cookies
+        });
 
         if (!res.ok) {
             throw new Error(`Search failed: ${res.status}`);
@@ -1099,7 +1102,7 @@ async function loadSearchResults(query) {
                 <h3>Search Error</h3>
                 <p>${err.message}</p>
                 <p style="color: #999; font-size: 0.8rem; margin-top: 1rem;">
-                    Please try again in a moment
+                    Error details: ${err.toString()}
                 </p>
             </div>`;
     }
