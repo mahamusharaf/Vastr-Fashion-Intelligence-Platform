@@ -1036,18 +1036,20 @@
     }
 }
 
-// NEW FUNCTION: Load search results
-// NEW FUNCTION: Load search results
+// NEW FUNCTION: Load search results - WITH DEBUGGING
 async function loadSearchResults(query) {
     try {
         document.getElementById('breadcrumbText').textContent = `Search: "${query}"`;
+        
+        // Show loading state
+        document.getElementById('productGrid').innerHTML = '<div class="loading">Searching...</div>';
 
         const params = new URLSearchParams({
             q: query,
             limit: 50
         });
         
-        // Add any active filters to search - FIXED PARAMETER NAMES
+        // Add any active filters to search
         if (currentFilters.brand.length > 0) {
             currentFilters.brand.forEach(b => params.append('brand', b));
         }
@@ -1061,17 +1063,31 @@ async function loadSearchResults(query) {
             params.append('max_price', currentFilters.priceMax);
         }
 
-        // FIXED: Removed trailing slash before ?
-        const res = await fetch(`${API_BASE}/search?${params}`);
+        const searchUrl = `${API_BASE}/search?${params}`;
+        console.log('🔍 Search URL:', searchUrl);
+        
+        const res = await fetch(searchUrl);
+
+        console.log('📡 Response status:', res.status);
+        console.log('📡 Response headers:', res.headers);
 
         if (!res.ok) {
-            throw new Error(`Search failed: ${res.status}`);
+            const errorText = await res.text();
+            console.error('❌ Error response:', errorText);
+            throw new Error(`Search failed: ${res.status} - ${errorText}`);
         }
 
         const data = await res.json();
+        console.log('✅ Search response data:', data);
 
-        totalProducts = data.total_results || 0;
-        displayProducts(data.products || []);
+        // Handle different possible response formats
+        const products = data.products || data.results || data.data || [];
+        const total = data.total_results || data.total || data.count || products.length;
+
+        console.log(`📦 Found ${products.length} products, total: ${total}`);
+
+        totalProducts = total;
+        displayProducts(products);
         updateResultsCount();
 
         // Show search-specific message
@@ -1079,12 +1095,16 @@ async function loadSearchResults(query) {
             `<strong>${totalProducts.toLocaleString()}</strong> results for "${query}"`;
 
     } catch (err) {
-        console.error("Search error:", err);
+        console.error("❌ Search error:", err);
+        console.error("❌ Error stack:", err.stack);
+        
         document.getElementById('productGrid').innerHTML = `
             <div class="no-results">
                 <h3>Search Error</h3>
                 <p>${err.message}</p>
-                <p>Make sure your search API is running</p>
+                <p style="color: #999; font-size: 0.8rem; margin-top: 1rem;">
+                    Check console for details (F12)
+                </p>
             </div>`;
     }
 }
