@@ -1038,12 +1038,10 @@
 }
 
 // NEW FUNCTION: Load search results - WITH DEBUGGING
-// NEW FUNCTION: Load search results - FORCE HTTPS
+// NEW FUNCTION: Load search results - WITH CORS PROXY
 async function loadSearchResults(query) {
     try {
         document.getElementById('breadcrumbText').textContent = `Search: "${query}"`;
-        
-        // Show loading state
         document.getElementById('productGrid').innerHTML = '<div class="loading">Searching...</div>';
 
         const params = new URLSearchParams({
@@ -1065,31 +1063,24 @@ async function loadSearchResults(query) {
             params.append('max_price', currentFilters.priceMax);
         }
 
-        // FORCE HTTPS - Ensure URL uses https://
-        let searchUrl = `${API_BASE}/search?${params}`;
-        searchUrl = searchUrl.replace('http://', 'https://'); // Force HTTPS
+        // Direct API URL (will work with CORS proxy)
+        const directApiUrl = `https://maha1326-vastr-fashion-api.hf.space/api/v1/search?${params}`;
         
-        console.log('🔍 Search URL:', searchUrl);
+        // Use CORS proxy to handle mixed content
+        const corsProxy = 'https://corsproxy.io/?';
+        const searchUrl = corsProxy + encodeURIComponent(directApiUrl);
         
-        const res = await fetch(searchUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-            // Force HTTPS redirect to be followed
-            redirect: 'follow'
-        });
-
-        console.log('📡 Response status:', res.status);
+        console.log('🔍 Search URL (via proxy):', searchUrl);
+        
+        const res = await fetch(searchUrl);
 
         if (!res.ok) {
             throw new Error(`Search failed: ${res.status}`);
         }
 
         const data = await res.json();
-        console.log('✅ Found products:', data.products?.length || 0);
+        console.log('✅ Search results:', data);
 
-        // Use the exact response structure from your API
         const products = data.products || [];
         const total = data.total_results || 0;
 
@@ -1108,7 +1099,7 @@ async function loadSearchResults(query) {
                 <h3>Search Error</h3>
                 <p>${err.message}</p>
                 <p style="color: #999; font-size: 0.8rem; margin-top: 1rem;">
-                    The search service may be temporarily unavailable
+                    Please try again in a moment
                 </p>
             </div>`;
     }
