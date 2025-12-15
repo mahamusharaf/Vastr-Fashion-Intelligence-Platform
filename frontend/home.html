@@ -964,38 +964,32 @@ body.image-search-page .image-search-btn { display:none !important; }
     defer>
 </script>
 <script>
-const API_BASE_DIRECT = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
-const USE_PROXY = true; // Set to false if direct calls start working
+console.log('Script started - no errors yet');
 
-    console.log('🔗 API_BASE_DIRECT:', API_BASE_DIRECT);
+// API Configuration - USE PROXY
+const API_BASE_URL = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
 
-    // Helper function to build API URLs
-    function getApiUrl(endpoint) {
-        const fullUrl = `${API_BASE_DIRECT}${endpoint}`;
-        
-        if (USE_PROXY) {
-            // Use Vercel proxy
-            return `/api/proxy?url=${encodeURIComponent(fullUrl)}`;
-        } else {
-            // Direct call
-            return fullUrl;
-        }
+// Helper function to use proxy
+function getProxyUrl(endpoint) {
+    const fullUrl = `${API_BASE_URL}${endpoint}`;
+    return `/api/proxy?url=${encodeURIComponent(fullUrl)}`;
+}
+
+// Wrapper for all API calls
+async function apiFetch(endpoint) {
+    const proxyUrl = getProxyUrl(endpoint);
+    console.log('🔗 Fetching via proxy:', proxyUrl);
+    
+    const response = await fetch(proxyUrl);
+    
+    if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
     }
+    
+    return response.json();
+}
 
-    // Simple fetch wrapper - ALREADY RETURNS PARSED JSON
-    async function apiFetch(endpoint) {
-        const url = getApiUrl(endpoint);
-        console.log('🔗 Fetching:', url);
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-        
-        return response.json(); // Already returns parsed JSON
-    }
-
+console.log('API configuration loaded');
 
 function initializeApp() {
     console.log('initializeApp called - API_BASE_URL:', API_BASE_URL);
