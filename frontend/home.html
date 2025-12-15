@@ -965,11 +965,34 @@ body.image-search-page .image-search-btn { display:none !important; }
 </script>
 <script>
 console.log('Script started - no errors yet');
-const API_BASE = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
-console.log('API_BASE defined:', API_BASE);
+
+// API Configuration - USE PROXY
+const API_BASE_URL = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
+
+// Helper function to use proxy
+function getProxyUrl(endpoint) {
+    const fullUrl = `${API_BASE_URL}${endpoint}`;
+    return `/api/proxy?url=${encodeURIComponent(fullUrl)}`;
+}
+
+// Wrapper for all API calls
+async function apiFetch(endpoint) {
+    const proxyUrl = getProxyUrl(endpoint);
+    console.log('🔗 Fetching via proxy:', proxyUrl);
+    
+    const response = await fetch(proxyUrl);
+    
+    if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+    }
+    
+    return response.json();
+}
+
+console.log('API configuration loaded');
 
 function initializeApp() {
-    console.log('initializeApp called - API_BASE:', API_BASE);
+    console.log('initializeApp called - API_BASE_URL:', API_BASE_URL);
     loadProducts();
     loadBrandsWithLogos();
     loadCategories();
@@ -991,8 +1014,7 @@ function initializeApp() {
         }
         async function loadBrandsWithLogos() {
         try {
-            const res = await fetch(`${API_BASE}/brands`);
-            const data = await res.json();
+            const data = await apiFetch('/brands'); 
 
             const popularBrands = data.brands
                 .sort((a, b) => b.product_count - a.product_count)
@@ -1018,8 +1040,7 @@ function initializeApp() {
         // ==================== LOAD CATEGORIES ====================
         async function loadCategories() {
             try {
-                const response = await fetch(`${API_BASE}/categories`);
-                const data = await response.json();
+               const data = await apiFetch('/categories');
 
                 const scroll = document.getElementById('categoryScroll');
 
@@ -1045,8 +1066,7 @@ function initializeApp() {
 async function loadProducts() {
     console.log('loadProducts started - API_BASE available:', typeof API_BASE !== 'undefined');
   try {
-    const response = await fetch(`${API_BASE}/products?limit=24`);
-    const data = await response.json();
+   const data = await apiFetch('/products?limit=24');
     const grid = document.getElementById('productGrid');
 
     if (data.products && data.products.length > 0) {
@@ -1128,8 +1148,7 @@ async function loadProducts() {
        async function viewProduct(productId) {
     try {
         // Fetch the product details to get the URL
-        const response = await fetch(`${API_BASE}/products/${productId}`);
-        const data = await response.json();
+        const data = await apiFetch(`/products/${productId}`);
 
         if (data.url) {
             // Redirect to the original brand website
@@ -1183,9 +1202,7 @@ async function loadSearchSuggestions(query) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
         try {
-            const response = await fetch(`${API_BASE}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
-            const data = await response.json();
-
+          const data = await apiFetch(`/search/suggestions?q=${encodeURIComponent(query)}&limit=5`); // Changed
             const suggestionsDiv = document.getElementById('searchSuggestions');
 
             if (data.suggestions && data.suggestions.length > 0) {
@@ -1387,7 +1404,7 @@ async function handleGoogleResponse(response) {
         if (isFirstTime) {
             try {
                 console.log('📧 Sending welcome email to first-time user...');
-                const emailResponse = await fetch(`${API_BASE}/auth/welcome-email`, {
+                const emailResponse = await fetch(`${API_BASE_URL}/auth/welcome-email`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1507,7 +1524,7 @@ async function handleLogin(event) {
     // Send welcome email only for first-time users
     if (isFirstTime) {
         try {
-            await fetch(`${API_BASE}/auth/welcome-email`, {
+            await fetch(`${API_BASE_URL}/auth/welcome-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
