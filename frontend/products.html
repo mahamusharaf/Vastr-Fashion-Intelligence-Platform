@@ -1120,16 +1120,14 @@ function displayProducts(products) {
     }
 
     grid.innerHTML = products.map(p => {
-        // Defensive field extraction - handles multiple possible field names
         const productName = p.product_name || p.title || p.name || 'Unnamed Product';
         const brandName = p.brand_name || p.brand || 'VASTR';
         const price = p.price_min || p.price || p.current_price || 0;
         const productId = p._id || p.product_id;
 
-        // FIXED: Better image URL handling
+        // Extract image URL
         let imageUrl = null;
         
-        // Try different image field structures
         if (p.image_urls && Array.isArray(p.image_urls) && p.image_urls[0]) {
             imageUrl = p.image_urls[0];
         } else if (p.images && Array.isArray(p.images) && p.images[0]) {
@@ -1140,27 +1138,27 @@ function displayProducts(products) {
             imageUrl = p.image;
         }
 
-        // Validate and construct proxy URL
+        // USE DIFFERENT PROXIES - Try multiple options
         let proxyImageUrl;
+        
         if (!imageUrl || imageUrl.trim() === '') {
-            // No image available - use placeholder
             proxyImageUrl = 'https://via.placeholder.com/300x400/f5f5f5/999?text=No+Image';
         } else if (imageUrl.includes('placeholder')) {
-            // Already a placeholder
             proxyImageUrl = imageUrl;
         } else {
-            // Valid image URL - use proxy
-            // Clean the URL first
             const cleanImageUrl = imageUrl.trim();
-            proxyImageUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanImageUrl)}&w=600&h=800&fit=cover&output=webp&q=85`;
+            
+            // OPTION 1: Try Cloudinary (more reliable)
+            proxyImageUrl = `https://res.cloudinary.com/demo/image/fetch/w_600,h_800,c_fill,f_auto,q_auto/${encodeURIComponent(cleanImageUrl)}`;
+            
+            // OPTION 2: Or use imgproxy.net (uncomment to try this instead)
+            // proxyImageUrl = `https://imgproxy.net/insecure/rs:fill:600:800/plain/${cleanImageUrl}`;
+            
+            // OPTION 3: Or try loading images directly (uncomment to try)
+            // proxyImageUrl = cleanImageUrl;
         }
 
         const priceDisplay = `PKR ${price.toLocaleString()}`;
-
-        // Log for debugging (remove in production)
-        if (!imageUrl) {
-            console.log('⚠️ No image URL for product:', productName, 'Product data:', p);
-        }
 
         return `
             <div class="product-card" style="position: relative;">
@@ -1190,7 +1188,6 @@ function displayProducts(products) {
         `;
     }).join('');
 
-    // Update heart icons after rendering products
     updateHeartIcons();
 }
         function updateResultsCount() {
