@@ -1037,6 +1037,7 @@
 }
 
 // NEW FUNCTION: Load search results
+// NEW FUNCTION: Load search results
 async function loadSearchResults(query) {
     try {
         document.getElementById('breadcrumbText').textContent = `Search: "${query}"`;
@@ -1044,11 +1045,14 @@ async function loadSearchResults(query) {
         const params = new URLSearchParams({
             q: query,
             limit: 50
-
         });
-        // Add any active filters to search
+        
+        // Add any active filters to search - FIXED PARAMETER NAMES
         if (currentFilters.brand.length > 0) {
-            params.append('brand', currentFilters.brand[0]);
+            currentFilters.brand.forEach(b => params.append('brand', b));
+        }
+        if (currentFilters.category.length > 0) {
+            currentFilters.category.forEach(c => params.append('category', c));
         }
         if (currentFilters.priceMin !== null) {
             params.append('min_price', currentFilters.priceMin);
@@ -1057,7 +1061,8 @@ async function loadSearchResults(query) {
             params.append('max_price', currentFilters.priceMax);
         }
 
-        const res = await fetch(`${API_BASE}/search/?${params}`);
+        // FIXED: Removed trailing slash before ?
+        const res = await fetch(`${API_BASE}/search?${params}`);
 
         if (!res.ok) {
             throw new Error(`Search failed: ${res.status}`);
@@ -1083,7 +1088,6 @@ async function loadSearchResults(query) {
             </div>`;
     }
 }
-
 function displayProducts(products) {
     const grid = document.getElementById('productGrid');
 
