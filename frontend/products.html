@@ -923,190 +923,190 @@
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
+  <script>
+    // ==================== API CONFIGURATION ====================
+    const API_BASE_DIRECT = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
+    const USE_PROXY = true; // Set to false if direct calls start working
 
-    <script>
-        const API_BASE = 'https://maha1326-vastr-fashion-api.hf.space/api/v1';
-        console.log('🔗 API_BASE:', API_BASE);
+    console.log('🔗 API_BASE_DIRECT:', API_BASE_DIRECT);
 
-        let currentPage = 1;
-        let currentFilters = { brand: [], category: [], priceMin: null, priceMax: null };
-        let currentSort = 'newest';
-        let totalProducts = 0;
-        const productsPerPage = 20;
-
-        function parseURLParams() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('category')) {
-                currentFilters.category = [params.get('category')];
-                document.getElementById('breadcrumbText').textContent = params.get('category');
-            }
-            if (params.get('brand')) {
-                currentFilters.brand = [decodeURIComponent(params.get('brand'))];
-            }
+    // Helper function to build API URLs
+    function getApiUrl(endpoint) {
+        const fullUrl = `${API_BASE_DIRECT}${endpoint}`;
+        
+        if (USE_PROXY) {
+            // Use Vercel proxy
+            return `/api/proxy?url=${encodeURIComponent(fullUrl)}`;
+        } else {
+            // Direct call
+            return fullUrl;
         }
-
-        async function loadFilterOptions() {
-            try {
-                const res = await fetch(`${API_BASE}/brands`);
-                const data = await res.json();
-                document.getElementById('brandFilters').innerHTML = data.brands.map(b => `
-                    <div class="filter-option">
-                        <input type="checkbox" id="b-${b.brand_id}" value="${b.brand_name}" onchange="applyFilters()">
-                        <label for="b-${b.brand_id}">${b.brand_name}</label>
-                        <span class="filter-count">(${b.product_count})</span>
-                    </div>
-                `).join('');
-            } catch (e) { console.error(e); }
-
-            try {
-                const res = await fetch(`${API_BASE}/categories`);
-                const data = await res.json();
-                document.getElementById('categoryFilters').innerHTML = (data.categories || []).map(c => `
-                    <div class="filter-option">
-                        <input type="checkbox" id="c-${c.category_name}" value="${c.category_name}" onchange="applyFilters()">
-                        <label for="c-${c.category_name}">${c.category_name}</label>
-                        <span class="filter-count">(${c.product_count})</span>
-                    </div>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
-        async function loadProducts() {
-    try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchQuery = urlParams.get('q');
-
-        // Check if this is a SEARCH request
-        if (searchQuery) {
-            await loadSearchResults(searchQuery);
-            return;
-        }
-
-        // Otherwise, normal product listing
-        const params = new URLSearchParams({
-            limit: productsPerPage,
-            page: currentPage
-        });
-
-        // Add brand filters
-        if (currentFilters.brand.length > 0) {
-            currentFilters.brand.forEach(b => params.append('brand', b));
-        }
-
-        // Add category filters
-        if (currentFilters.category.length > 0) {
-            currentFilters.category.forEach(c => params.append('category', c));
-        }
-
-        // Add price filters
-        if (currentFilters.priceMin !== null) {
-            params.append('price_min', currentFilters.priceMin);
-        }
-        if (currentFilters.priceMax !== null) {
-            params.append('price_max', currentFilters.priceMax);
-        }
-
-        // Add sort
-        if (currentSort === 'price-asc') {
-            params.append('sort', 'price_asc');
-        } else if (currentSort === 'price-desc') {
-            params.append('sort', 'price_desc');
-        }
-
-        const res = await fetch(`${API_BASE}/products?${params}`);
-
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-        }
-
-        const data = await res.json();
-        const products = data.products || [];
-        const total = data.total_products || 0;
-
-        totalProducts = total;
-        displayProducts(products);
-        updateResultsCount();
-        updatePagination();
-
-    } catch (err) {
-        console.error("Load products error:", err);
-        document.getElementById('productGrid').innerHTML = `
-            <div class="no-results">
-                <h3>Connection Error</h3>
-                <p>${err.message}</p>
-            </div>`;
     }
-}
 
-// NEW FUNCTION: Load search results - WITH DEBUGGING
-// NEW FUNCTION: Load search results - Direct API call with proper headers
-async function loadSearchResults(query) {
-    try {
-        document.getElementById('breadcrumbText').textContent = `Search: "${query}"`;
-        document.getElementById('productGrid').innerHTML = '<div class="loading">Searching...</div>';
-
-        const params = new URLSearchParams({
-            q: query,
-            limit: 50
-        });
+    // Simple fetch wrapper - ALREADY RETURNS PARSED JSON
+    async function apiFetch(endpoint) {
+        const url = getApiUrl(endpoint);
+        console.log('🔗 Fetching:', url);
         
-        // Add filters
-        if (currentFilters.brand.length > 0) {
-            currentFilters.brand.forEach(b => params.append('brand', b));
-        }
-        if (currentFilters.category.length > 0) {
-            currentFilters.category.forEach(c => params.append('category', c));
-        }
-        if (currentFilters.priceMin !== null) {
-            params.append('min_price', currentFilters.priceMin);
-        }
-        if (currentFilters.priceMax !== null) {
-            params.append('max_price', currentFilters.priceMax);
-        }
-
-        // Direct HTTPS URL - no proxy needed
-        const searchUrl = `https://maha1326-vastr-fashion-api.hf.space/api/v1/search?${params}`;
+        const response = await fetch(url);
         
-        console.log('🔍 Search URL:', searchUrl);
-        
-        const res = await fetch(searchUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-            mode: 'cors', // Explicitly set CORS mode
-            credentials: 'omit' // Don't send cookies
-        });
-
-        if (!res.ok) {
-            throw new Error(`Search failed: ${res.status}`);
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
         }
-
-        const data = await res.json();
-        console.log('✅ Search results:', data);
-
-        const products = data.products || [];
-        const total = data.total_results || 0;
-
-        totalProducts = total;
-        displayProducts(products);
-        updateResultsCount();
-
-        document.getElementById('resultsCount').innerHTML =
-            `<strong>${totalProducts.toLocaleString()}</strong> results for "${query}"`;
-
-    } catch (err) {
-        console.error("❌ Search error:", err);
         
-        document.getElementById('productGrid').innerHTML = `
-            <div class="no-results">
-                <h3>Search Error</h3>
-                <p>${err.message}</p>
-                <p style="color: #999; font-size: 0.8rem; margin-top: 1rem;">
-                    Error details: ${err.toString()}
-                </p>
-            </div>`;
+        return response.json(); // Already returns parsed JSON
     }
-}
+
+    // ==================== STATE VARIABLES ====================
+    let currentPage = 1;
+    let currentFilters = { brand: [], category: [], priceMin: null, priceMax: null };
+    let currentSort = 'newest';
+    let totalProducts = 0;
+    const productsPerPage = 20;
+
+    function parseURLParams() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('category')) {
+            currentFilters.category = [params.get('category')];
+            document.getElementById('breadcrumbText').textContent = params.get('category');
+        }
+        if (params.get('brand')) {
+            currentFilters.brand = [decodeURIComponent(params.get('brand'))];
+        }
+    }
+
+    // ==================== LOAD FILTER OPTIONS - FIXED ====================
+    async function loadFilterOptions() {
+        try {
+            const data = await apiFetch('/brands'); // Already returns JSON
+            document.getElementById('brandFilters').innerHTML = data.brands.map(b => `
+                <div class="filter-option">
+                    <input type="checkbox" id="b-${b.brand_id}" value="${b.brand_name}" onchange="applyFilters()">
+                    <label for="b-${b.brand_id}">${b.brand_name}</label>
+                    <span class="filter-count">(${b.product_count})</span>
+                </div>
+            `).join('');
+        } catch (e) { 
+            console.error('Brands error:', e);
+            document.getElementById('brandFilters').innerHTML = '<p style="color: #999;">Unable to load brands</p>';
+        }
+
+        try {
+            const data = await apiFetch('/categories'); // Already returns JSON
+            document.getElementById('categoryFilters').innerHTML = (data.categories || []).map(c => `
+                <div class="filter-option">
+                    <input type="checkbox" id="c-${c.category_name}" value="${c.category_name}" onchange="applyFilters()">
+                    <label for="c-${c.category_name}">${c.category_name}</label>
+                    <span class="filter-count">(${c.product_count})</span>
+                </div>
+            `).join('');
+        } catch (e) { 
+            console.error('Categories error:', e);
+            document.getElementById('categoryFilters').innerHTML = '<p style="color: #999;">Unable to load categories</p>';
+        }
+    }
+
+    // ==================== LOAD PRODUCTS - FIXED ====================
+    async function loadProducts() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('q');
+
+            // Check if this is a SEARCH request
+            if (searchQuery) {
+                await loadSearchResults(searchQuery);
+                return;
+            }
+
+            // Otherwise, normal product listing
+            const params = new URLSearchParams({
+                limit: productsPerPage,
+                page: currentPage
+            });
+
+            // Add brand filters
+            if (currentFilters.brand.length > 0) {
+                currentFilters.brand.forEach(b => params.append('brand', b));
+            }
+
+            // Add category filters
+            if (currentFilters.category.length > 0) {
+                currentFilters.category.forEach(c => params.append('category', c));
+            }
+
+            // Add price filters
+            if (currentFilters.priceMin !== null) {
+                params.append('price_min', currentFilters.priceMin);
+            }
+            if (currentFilters.priceMax !== null) {
+                params.append('price_max', currentFilters.priceMax);
+            }
+
+            // Add sort
+            if (currentSort === 'price-asc') {
+                params.append('sort', 'price_asc');
+            } else if (currentSort === 'price-desc') {
+                params.append('sort', 'price_desc');
+            }
+
+            const data = await apiFetch(`/products?${params}`); // Already returns JSON
+
+            totalProducts = data.total_products || 0;
+            displayProducts(data.products || []);
+            updateResultsCount();
+            updatePagination();
+
+        } catch (err) {
+            console.error("Load products error:", err);
+            document.getElementById('productGrid').innerHTML = `
+                <div class="no-results">
+                    <h3>Connection Error</h3>
+                    <p>${err.message}</p>
+                </div>`;
+        }
+    }
+
+    // ==================== LOAD SEARCH RESULTS - FIXED ====================
+    async function loadSearchResults(query) {
+        try {
+            document.getElementById('breadcrumbText').textContent = `Search: "${query}"`;
+            document.getElementById('productGrid').innerHTML = '<div class="loading">Searching...</div>';
+
+            const params = new URLSearchParams({ q: query, limit: 50 });
+            
+            if (currentFilters.brand.length > 0) {
+                currentFilters.brand.forEach(b => params.append('brand', b));
+            }
+            if (currentFilters.category.length > 0) {
+                currentFilters.category.forEach(c => params.append('category', c));
+            }
+            if (currentFilters.priceMin !== null) {
+                params.append('min_price', currentFilters.priceMin);
+            }
+            if (currentFilters.priceMax !== null) {
+                params.append('max_price', currentFilters.priceMax);
+            }
+
+            const data = await apiFetch(`/search?${params}`); // Already returns JSON
+
+            totalProducts = data.total_results || 0;
+            displayProducts(data.products || []);
+            updateResultsCount();
+
+            document.getElementById('resultsCount').innerHTML =
+                `<strong>${totalProducts.toLocaleString()}</strong> results for "${query}"`;
+
+        } catch (err) {
+            console.error("Search error:", err);
+            document.getElementById('productGrid').innerHTML = `
+                <div class="no-results">
+                    <h3>Search Error</h3>
+                    <p>${err.message}</p>
+                </div>`;
+        }
+    }
+
+    // ... (keep all your other functions below - displayProducts, updateResultsCount, etc.)
 function displayProducts(products) {
     const grid = document.getElementById('productGrid');
 
@@ -1245,8 +1245,7 @@ function applyFilters() {
         async function viewProduct(productId) {
     try {
         // Fetch the product details to get the URL
-        const response = await fetch(`${API_BASE}/products/${productId}`);
-        const data = await response.json();
+        const data = await apiFetch(`/products/${productId}`);
 
         if (data.url) {
             // Redirect to the original brand website
@@ -1284,9 +1283,7 @@ async function loadSearchSuggestions(query) {
     clearTimeout(suggestionTimeout);
     suggestionTimeout = setTimeout(async () => {
         try {
-            const response = await fetch(`${API_BASE}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
-            const data = await response.json();
-
+            const data = await apiFetch(`/search/suggestions?q=${encodeURIComponent(query)}&limit=5`); 
             const suggestionsDiv = document.getElementById('searchSuggestions');
 
             if (data.suggestions && data.suggestions.length > 0) {
@@ -1502,7 +1499,7 @@ async function handleGoogleResponse(response) {
         if (isFirstTime) {
             try {
                 console.log('📧 Sending welcome email to first-time user...');
-                const emailResponse = await fetch(`${API_BASE}/auth/welcome-email`, {
+                const emailResponse = await fetch(`${API_BASE_DIRECT}/auth/welcome-email`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
