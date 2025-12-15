@@ -1057,7 +1057,7 @@ async function loadSearchResults(query) {
             params.append('max_price', currentFilters.priceMax);
         }
 
-        const res = await fetch(`${API_BASE}/search?${params}`);
+        const res = await fetch(`${API_BASE}/search/?${params}`);
 
         if (!res.ok) {
             throw new Error(`Search failed: ${res.status}`);
