@@ -8,16 +8,16 @@ from database import test_connection
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("=" * 50)
-    print("🚀 Starting Vastr Fashion API...")
+    print(" Starting Vastr Fashion API...")
     print("=" * 50)
     test_connection()
     print("=" * 50)
-    print("✅ API Ready!")
-    print("📚 Docs: http://localhost:8000/docs")
+    print(" API Ready!")
+    print(" Docs: http://localhost:8000/docs")
     print("=" * 50)
     yield
     print("=" * 50)
-    print("🛑 Shutting down Vastr Fashion API...")
+    print(" Shutting down Vastr Fashion API...")
     print("=" * 50)
 
 app = FastAPI(
