@@ -1,15 +1,3 @@
-"""
-Vastr Fashion Intelligence Platform
-Automated Data Sync & Update System
-
-Features:
-- Incremental updates (only fetch changed products)
-- Track price changes over time
-- Detect new products and removed products
-- Schedule periodic syncs
-- Maintain data freshness
-"""
-
 from pymongo import MongoClient
 import requests
 import time
@@ -133,7 +121,7 @@ class VastrDataSync:
         self.sync_logs = self.db['sync_logs']
         self.removed_products = self.db['removed_products']
 
-        print("✅ Data Sync Manager initialized")
+        print(" Data Sync Manager initialized")
 
     def fetch_live_products(self, brand_id: str, collection: str) -> List[Dict]:
         """
@@ -165,7 +153,7 @@ class VastrDataSync:
                 time.sleep(DELAY_BETWEEN_REQUESTS)
 
             except Exception as e:
-                print(f"   ⚠️ Error fetching {brand_id}/{collection}: {e}")
+                print(f"   Error fetching {brand_id}/{collection}: {e}")
                 break
 
         return all_products
@@ -200,7 +188,7 @@ class VastrDataSync:
         # Fetch live products
         live_products = []
         for collection in brand_config['collections']:
-            print(f"   📦 Fetching collection: {collection}")
+            print(f"    Fetching collection: {collection}")
             products = self.fetch_live_products(brand_id, collection)
             live_products.extend(products)
 
@@ -208,7 +196,7 @@ class VastrDataSync:
         live_products_map = {str(p['id']): p for p in live_products}
         live_ids = set(live_products_map.keys())
 
-        print(f"\n   📊 Comparison:")
+        print(f"\n    Comparison:")
         print(f"      Existing in DB: {len(existing_ids)}")
         print(f"      Live on website: {len(live_ids)}")
 
@@ -235,7 +223,7 @@ class VastrDataSync:
                     self._log_price(product_id, brand_id, parsed['price_min'])
 
             except Exception as e:
-                print(f"   ❌ Error adding new product {product_id}: {e}")
+                print(f"    Error adding new product {product_id}: {e}")
                 stats['errors'] += 1
 
         # Process removed products
@@ -260,7 +248,7 @@ class VastrDataSync:
                     stats['removed_products'] += 1
 
             except Exception as e:
-                print(f"   ❌ Error removing product {product_id}: {e}")
+                print(f"    Error removing product {product_id}: {e}")
                 stats['errors'] += 1
 
         # Process updated products
@@ -282,7 +270,7 @@ class VastrDataSync:
                 if old_price != new_price and new_price > 0:
                     stats['price_changes'] += 1
                     self._log_price(product_id, brand_id, new_price, old_price)
-                    print(f"   💰 Price change: {product_id} - PKR {old_price:,.0f} → PKR {new_price:,.0f}")
+                    print(f"    Price change: {product_id} - PKR {old_price:,.0f} → PKR {new_price:,.0f}")
 
                 # Update product
                 parsed['last_updated'] = datetime.now()
@@ -296,7 +284,7 @@ class VastrDataSync:
                 stats['updated_products'] += 1
 
             except Exception as e:
-                print(f"   ❌ Error updating product {product_id}: {e}")
+                print(f"    Error updating product {product_id}: {e}")
                 stats['errors'] += 1
 
         # Update brand stats
@@ -307,7 +295,7 @@ class VastrDataSync:
         self._log_sync(stats)
 
         # Print summary
-        print(f"\n   ✅ Sync Complete:")
+        print(f"\n    Sync Complete:")
         print(f"      New: {stats['new_products']}")
         print(f"      Updated: {stats['updated_products']}")
         print(f"      Price changes: {stats['price_changes']}")
@@ -344,7 +332,7 @@ class VastrDataSync:
                 time.sleep(3)
 
             except Exception as e:
-                print(f"\n❌ Failed to sync {brand_id}: {e}")
+                print(f"\n Failed to sync {brand_id}: {e}")
                 overall_stats['total_errors'] += 1
 
         overall_stats['end_time'] = datetime.now()
@@ -491,7 +479,7 @@ def run_scheduled_sync():
 
 def setup_scheduler():
     """Setup automatic sync schedule"""
-    print(f"📅 Scheduling automatic sync every {SYNC_INTERVAL_HOURS} hours")
+    print(f" Scheduling automatic sync every {SYNC_INTERVAL_HOURS} hours")
 
     # Schedule sync
     schedule.every(SYNC_INTERVAL_HOURS).hours.do(run_scheduled_sync)
@@ -499,20 +487,17 @@ def setup_scheduler():
     # Also schedule daily sync at 3 AM
     schedule.every().day.at("03:00").do(run_scheduled_sync)
 
-    print("✅ Scheduler configured")
+    print(" Scheduler configured")
     print(f"   - Every {SYNC_INTERVAL_HOURS} hours")
     print(f"   - Daily at 3:00 AM")
 
     # Run scheduler
-    print("\n⏰ Scheduler running... (Press Ctrl+C to stop)")
+    print("\n Scheduler running... (Press Ctrl+C to stop)")
     while True:
         schedule.run_pending()
         time.sleep(60)  # Check every minute
 
 
-# ============================================
-# MAIN EXECUTION
-# ============================================
 if __name__ == "__main__":
     import sys
 
@@ -525,5 +510,5 @@ if __name__ == "__main__":
         sync_manager.sync_all_brands()
         sync_manager.close()
 
-        print("\n💡 To run automatic scheduled syncs:")
+        print("\n To run automatic scheduled syncs:")
         print("   python vastr_data_sync.py --schedule")
