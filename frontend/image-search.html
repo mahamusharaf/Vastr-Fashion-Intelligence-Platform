@@ -809,14 +809,14 @@ async function handleGoogleResponse(response) {
                 const emailData = await emailResponse.json();
 
                 if (emailResponse.ok) {
-                    console.log('✅ Welcome email sent successfully!');
+                    console.log(' Welcome email sent successfully!');
                     showNotification(`Welcome, ${userInfo.name}! Check your email for a special message.`);
                 } else {
-                    console.warn('⚠️ Email sending failed:', emailData);
+                    console.warn(' Email sending failed:', emailData);
                     showNotification(`Welcome, ${userInfo.name}!`);
                 }
             } catch (emailError) {
-                console.error('❌ Email API error:', emailError);
+                console.error(' Email API error:', emailError);
                 // Don't fail the login if email fails
                 showNotification(`Welcome, ${userInfo.name}!`);
             }
@@ -824,7 +824,7 @@ async function handleGoogleResponse(response) {
             // Mark this user as having logged in
             markUserLogin(userInfo.email);
         } else {
-            console.log('👋 Returning user - no welcome email needed');
+            console.log(' Returning user - no welcome email needed');
             showNotification(`Welcome back, ${userInfo.name}!`);
         }
 
@@ -842,7 +842,7 @@ async function handleGoogleResponse(response) {
         }
 
     } catch (error) {
-        console.error('❌ Google login error:', error);
+        console.error(' Google login error:', error);
         showNotification('Login failed. Please try again.');
     }
 }
