@@ -9,7 +9,7 @@ import time
 load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
 
-print(f"🔑 Email Service - API Key loaded: {'✅ YES' if resend.api_key else '❌ NO'}")
+print(f" Email Service - API Key loaded: {' YES' if resend.api_key else ' NO'}")
 
 # Create router
 router = APIRouter(prefix="/api/v1", tags=["email"])
@@ -177,13 +177,13 @@ If you didn't create this account, you can safely ignore this email.
 def send_welcome_email_sync(email: str, name: str, website_url: str):
     """Send welcome email with clickable link"""
     try:
-        print(f"🚀 Sending email to: {email}")
-        print(f"🔗 Website URL: {website_url}")
+        print(f" Sending email to: {email}")
+        print(f" Website URL: {website_url}")
 
         params = {
             "from": "Vastr <onboarding@resend.dev>",
             "to": [email],
-            "subject": "Welcome to Vastr — Your Fashion Journey Starts Now ✨",
+            "subject": "Welcome to Vastr — Your Fashion Journey Starts Now ",
             "html": get_welcome_email_html(name, website_url),
             "text": get_welcome_email_text(name, website_url)
         }
@@ -192,24 +192,22 @@ def send_welcome_email_sync(email: str, name: str, website_url: str):
         response = resend.Emails.send(params)
         duration = time.time() - start_time
 
-        print(f"✅ EMAIL SENT SUCCESSFULLY!")
-        print(f"   📧 ID: {response.get('id', 'unknown')}")
-        print(f"   ⏱️  Time: {duration:.2f}s")
-        print(f"   🔗 Button links to: {website_url}")
+        print(f" EMAIL SENT SUCCESSFULLY!")
+        print(f"    ID: {response.get('id', 'unknown')}")
+        print(f"     Time: {duration:.2f}s")
+        print(f"    Button links to: {website_url}")
         return {"success": True, "email_id": response.get('id')}
 
     except Exception as e:
-        print(f"❌ EMAIL FAILED: {str(e)}")
+        print(f" EMAIL FAILED: {str(e)}")
         print(f"   📋 Error Type: {type(e).__name__}")
         return {"success": False, "error": str(e)}
 
-
-# ✅ ROUTES
 @router.get("/debug/resend-status")
 async def debug_status():
     """Debug endpoint - TEST THIS FIRST!"""
     return {
-        "status": "✅ Email Service Working!",
+        "status": " Email Service Working!",
         "api_key_loaded": bool(resend.api_key),
         "endpoints": {
             "send_email": "/api/v1/auth/welcome-email",
@@ -224,10 +222,10 @@ async def debug_status():
 async def send_welcome_email(request: WelcomeEmailRequest):
     """Send welcome email endpoint"""
     print(f"\n{'=' * 60}")
-    print(f"📨 NEW EMAIL REQUEST")
-    print(f"   📧 To: {request.email}")
-    print(f"   👤 Name: {request.name}")
-    print(f"   🌐 URL: {request.website_url}")
+    print(f"  NEW EMAIL REQUEST")
+    print(f"   To: {request.email}")
+    print(f"   Name: {request.name}")
+    print(f"    URL: {request.website_url}")
     print(f"{'=' * 60}")
 
     result = send_welcome_email_sync(
@@ -244,7 +242,7 @@ async def send_welcome_email(request: WelcomeEmailRequest):
             "email_id": result.get("email_id")
         }
     else:
-        print(f"💥 FAILED TO SEND EMAIL")
+        print(f" FAILED TO SEND EMAIL")
         raise HTTPException(
             status_code=500,
             detail=f"Failed to send email: {result.get('error', 'Unknown error')}"
@@ -263,4 +261,4 @@ async def test_email(email: str, name: str = "Test User"):
     )
 
 
-print("✅ Email Service Router Loaded Successfully!")
+print(" Email Service Router Loaded Successfully!")
