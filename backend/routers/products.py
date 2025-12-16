@@ -56,10 +56,10 @@ async def get_products(
 
     # DEBUG OUTPUT - MUST SEE THIS IN TERMINAL
     print("\n" + "="*80, file=sys.stderr, flush=True)
-    print(f"🔍 QUERY: {query}", file=sys.stderr, flush=True)
-    print(f"📊 FILTERS: brands={brand}, categories={category}", file=sys.stderr, flush=True)
-    print(f"💰 PRICE: min={price_min}, max={price_max}", file=sys.stderr, flush=True)
-    print(f"📄 PAGINATION: page={page}, skip={skip}, limit={limit}", file=sys.stderr, flush=True)
+    print(f" QUERY: {query}", file=sys.stderr, flush=True)
+    print(f" FILTERS: brands={brand}, categories={category}", file=sys.stderr, flush=True)
+    print(f" PRICE: min={price_min}, max={price_max}", file=sys.stderr, flush=True)
+    print(f" PAGINATION: page={page}, skip={skip}, limit={limit}", file=sys.stderr, flush=True)
     print("="*80 + "\n", file=sys.stderr, flush=True)
 
     # Execute query
@@ -72,7 +72,7 @@ async def get_products(
     )
 
     # DEBUG RESULTS
-    print(f"✅ FOUND: {len(products)} products (Total: {total})", file=sys.stderr, flush=True)
+    print(f" FOUND: {len(products)} products (Total: {total})", file=sys.stderr, flush=True)
     if products and len(products) > 0:
         print(f"   First product: {products[0].get('title', 'No title')[:50]} - PKR {products[0].get('price_min', 'N/A')}", file=sys.stderr, flush=True)
         print(f"   Last product: {products[-1].get('title', 'No title')[:50]} - PKR {products[-1].get('price_min', 'N/A')}", file=sys.stderr, flush=True)
