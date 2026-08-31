@@ -43,7 +43,7 @@ Ranked, filtered results  →  React frontend (search, wishlist, filters)
 ## Features
 
 -  Hybrid search combining BM25 + cosine similarity
--  Automated data synchronization across 7 brands (6,000+ products)
+-  Automated data synchronization across 10+ brands (20,000+ products)
 -  Real-time price change and inventory tracking
 -  User authentication and wishlist support
 -  Advanced filtering (price, brand, category, and more)
